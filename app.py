@@ -24,15 +24,6 @@ HG38_CHROM_SIZES = {
 # Initialize Flask app with the templates folder path
 app = Flask(__name__, template_folder=TEMPLATES_PATH, static_folder=STATIC_PATH)
 
-# def get_db_connection():
-#     conn = psycopg2.connect(
-#         dbname="CTCFDB_PostgreSQL",
-#         user="vdj6tq",
-#         host="localhost"
-#     )
-#     conn.autocommit = True
-#     return conn
-
 def get_db_connection():
     conn = psycopg2.connect(
         dbname=os.environ.get("DB_NAME", "CTCFDB_PostgreSQL"),
