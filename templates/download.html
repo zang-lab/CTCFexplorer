@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        h4 {
+            color: #063970;
+        }
+        .highlight {
+            font-weight: bold;
+        }
+        .section-spacing {
+            margin-top: 30px; /* Extra space between High-confidence and Constitutive sections */
+        }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="container my-5">
+        <div class="py-3">
+          <h4 class="mt-4 highlight">Download</h4>
+          <ul>
+            <li><span class="highlight">High-confidence CTCF binding sites (510,675)</span>
+                <ul>
+                    <li><a href="{{ url_for('static', filename='data/high-confidence.bed') }}">BED format</a></li>
+                    <li><a href="{{ url_for('static', filename='data/high-confidence.csv') }}">CSV format</a> with annotation</li>
+                </ul>
+            </li>
+          </ul>
+
+          <ul class="section-spacing">
+              <li><span class="highlight">Constitutive CTCF binding sites (22,722)</span>
+                  <ul>
+                      <li><a href="{{ url_for('static', filename='data/constitutive.bed') }}">BED format</a></li>
+                      <li><a href="{{ url_for('static', filename='data/constitutive.csv') }}">CSV format</a> with annotation</li>
+                  </ul>
+              </li>
+          </ul>
+
+          <ul class="section-spacing">
+              <li><span class="highlight"><a href="{{ url_for('static', filename='data/CTCF_database_info_all.csv') }}">List</a> of collected CTCF ChIP-seq datasets</span></li>
+          </ul>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS files -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  </body>
+</html>

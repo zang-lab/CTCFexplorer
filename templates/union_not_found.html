@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="author" content="Shengyuan Wang">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        
+        <style>
+            .highlight {
+                font-weight: bold;
+            }
+            .section-spacing {
+                margin-top: 30px; /* Extra space between High-confidence and Constitutive sections */
+            }
+        </style>
+    </head>
+
+    <body class="bg-light">
+        {% include "header.html" %}
+
+        <div class="container my-5">
+            <div class="py-3">
+              <h4 class="mt-4 highlight">Union search error</h4>
+                <p>{{ error }}</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Back to Search</a>
+            </div>
+        </div>
+
+        {% include "footer.html" %}
+
+        <!-- Local JS files -->
+        <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    </body>
+</html>

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Cell Type Search Results</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/datatables.min.css') }}">
+
+    <style>
+        .fixed-sidebar {
+            position: fixed;
+            top: 75px;
+            width: 200px;
+            height: auto;
+            padding: 10px;
+        }
+
+        .content {
+            margin-left: 220px;
+        }
+
+        .separator-line {
+            border-top: 2px solid #ddd;
+            margin: 40px 0;
+        }
+
+        .nav {
+            flex-direction: column;
+        }
+
+        .nav-link {
+            font-size: 16px;
+        }
+
+        .section-header {
+            font-weight: bold;
+            margin-top: 20px;
+            scroll-margin-top: 100px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="fixed-sidebar bg-white border">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#gsm-info">GSM Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#gain-info">Union Bindings with Specific Gain</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#loss-info">Union Bindings with Specific Loss</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="col content">
+                <div class="separator-line"></div>
+                <h4 class="section-header" id="celltype-details">Search results for cell type: <strong>{{ celltype }}</strong></h4>
+                <div class="separator-line"></div>
+
+                <!-- GSM Information Section -->
+                <h4 class="section-header" id="gsm-info">GSMs using this cell type</h4>
+                <a href="{{ url_for('download_table', table_name='gsm_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download GSM Data</a>
+                <table id="gsm-table" class="table table-striped table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th>GSM</th>
+                            <th>GSE</th>
+                            <th>In Situ Site</th>
+                            <th>Cell Type</th>
+                            <th>Number of Peaks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in gsm_results %}
+                        <tr>
+                            <td>
+                              <form method="POST" action="{{ url_for('search_gsm') }}" style="display: inline;">
+                                <input type="hidden" name="gsm" value="{{ row['GSM'] }}">
+                                <button type="submit" style="background: none; border: none; padding: 0; color: #007bff; text-decoration: underline; cursor: pointer;">
+                                  {{ row['GSM'] }}
+                                </button>
+                              </form>
+                            </td>
+                            <td>{{ row['GSE'] }}</td>
+                            <td>{{ row['In Situ Site'] }}</td>
+                            <td>{{ row['Label'] }}</td>
+                            <td>{{ row['Num Peaks'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="separator-line"></div>
+
+                <!-- Union Bindings with Specific Gain -->
+                <h4 class="section-header" id="gain-info">Union bindings with specific gain</h4>
+                <a href="{{ url_for('download_table', table_name='gain_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download Gain Data</a>
+                <table id="gain-table" class="table table-striped table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th title="Unique identifier for the binding site">Union ID</th>
+                            <th title="Genomic location of the binding site">Loci</th>
+                            <th title="Genomic location(s) of motif(s) overlapping with this binding site">Motif</th>
+                            <th title="Cell type(s) showing increased binding at this site">Cell Type Gain</th>
+                            <th title="Cell type(s) showing decreased binding at this site">Cell Type Lost</th>
+                            <th title="Whether the binding is constitutive">Constitutive</th>
+                            <th title="Number of samples with this binding site">Occupancy score</th>
+                            <th title="Percentage of samples with this binding site">Occupancy frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in gain_results %}
+                        <tr>
+                            <td><a href="{{ url_for('union_info', union_id=row['Union ID']) }}">{{ row['Union ID'] }}</a></td>
+                            <td>{{ row['Loci'] }}</td>
+                            <td>
+                              {% set motif = row['Motif'] %}
+                              {% if motif and motif != 'nan' and motif != 'NaN' and motif == motif %}
+                                {{ motif }}
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% set ct_gain = row['Cell type gain'] %}
+                              {% if ct_gain and ct_gain != 'nan' and ct_gain != 'NaN' and ct_gain == ct_gain %}
+                                {% for celltype in (ct_gain|string).strip('"').split(' ') %}
+                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% set ct_lost = row['Cell type lost'] %}
+                              {% if ct_lost and ct_lost != 'nan' and ct_lost != 'NaN' and ct_lost == ct_lost %}
+                                {% for celltype in (ct_lost|string).strip('"').split(' ') %}
+                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                              {% endif %}
+                            </td>
+                            <td>{{ row['Constitutive'] }}</td>
+                            <td>{{ row['Occupancy score'] }}</td>
+                            <td>{{ row['Occupancy frequency'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="separator-line"></div>
+
+                <!-- Union Bindings with Specific Loss -->
+                <h4 class="section-header" id="loss-info">Union bindings with specific loss</h4>
+                <a href="{{ url_for('download_table', table_name='loss_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download Loss Data</a>
+                <table id="loss-table" class="table table-striped table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th title="Unique identifier for the binding site">Union ID</th>
+                            <th title="Genomic location of the binding site">Loci</th>
+                            <th title="Genomic location(s) of motif(s) overlapping with this binding site">Motif</th>
+                            <th title="Cell type(s) showing increased binding at this site">Cell Type Gain</th>
+                            <th title="Cell type(s) showing decreased binding at this site">Cell Type Lost</th>
+                            <th title="Whether the binding is constitutive">Constitutive</th>
+                            <th title="Number of samples with this binding site">Occupancy score</th>
+                            <th title="Percentage of samples with this binding site">Occupancy frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in loss_results %}
+                        <tr>
+                            <td><a href="{{ url_for('union_info', union_id=row['Union ID']) }}">{{ row['Union ID'] }}</a></td>
+                            <td>{{ row['Loci'] }}</td>
+                            <td>
+                              {% set motif = row['Motif'] %}
+                              {% if motif and motif != 'nan' and motif != 'NaN' and motif == motif %}
+                                {{ motif }}
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% set ct_gain = row['Cell type gain'] %}
+                              {% if ct_gain and ct_gain != 'nan' and ct_gain != 'NaN' and ct_gain == ct_gain %}
+                                {% for celltype in (ct_gain|string).strip('"').split(' ') %}
+                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% set ct_lost = row['Cell type lost'] %}
+                              {% if ct_lost and ct_lost != 'nan' and ct_lost != 'NaN' and ct_lost == ct_lost %}
+                                {% for celltype in (ct_lost|string).strip('"').split(' ') %}
+                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                              {% endif %}
+                            </td>
+                            <td>{{ row['Constitutive'] }}</td>
+                            <td>{{ row['Occupancy score'] }}</td>
+                            <td>{{ row['Occupancy frequency'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#gsm-table').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true
+            });
+            $('#gain-table').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true
+            });
+            $('#loss-table').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true
+            });
+        });
+    </script>
+</body>
+</html>

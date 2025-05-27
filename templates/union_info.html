@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/datatables.min.css') }}">
+
+    <title>Details for Union ID: {{ union_id }}</title>
+
+    <style>
+        .fixed-sidebar {
+            position: fixed;
+            top: 75px;
+            width: 200px;
+            height: auto;
+            padding: 10px;
+        }
+
+        .content {
+            margin-left: 220px;
+        }
+
+        .separator-line {
+            border-top: 2px solid #ddd;
+            margin: 40px 0;
+        }
+
+        .nav {
+            flex-direction: column;
+        }
+
+        .nav-link {
+            font-size: 16px;
+        }
+
+        .section-header {
+            font-weight: bold;
+            margin-top: 20px;
+            scroll-margin-top: 100px;
+        }
+    </style>
+
+</head>
+<body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="fixed-sidebar bg-white border">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#basic-info">Basic Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#celltype-info">Cell Type Info</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#sample-info">Sample Info</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="col content">
+                <div class="separator-line"></div>
+                <h4 class="section-header" id="union-id-details">Details for Union ID: {{ union_id }}</h4>
+                <div class="separator-line"></div>
+
+                <!-- Basic Info Section -->
+                <h4 class="section-header" id="basic-info">Basic Info</h4>
+                <a href="{{ url_for('download_table', table_name='basic_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Basic Info</a>
+                <table class="table table-striped table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th title="Unique identifier for the binding site">Union ID</th>
+                            <th title="Genomic location of the binding site">Loci</th>
+                            <th title="Genomic location(s) of motif(s) overlapping with this binding site">Motif</th>
+                            <th title="Genomic feature associated with this binding site">Genomic Feature</th>
+                            <th title="Cell type(s) showing increased binding at this site">Cell Type Gain</th>
+                            <th title="Cell type(s) showing decreased binding at this site">Cell Type Lost</th>
+                            <th title="Whether the binding is constitutive">Constitutive</th>
+                            <th title="Number of samples with this binding site">Occupancy Score</th>
+                            <th title="Percentage of samples with this binding site">Occupancy Frequency</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in basic %}
+                        <tr>
+                            <td>{{ row['Union ID'] }}</td>
+                            <td>{{ row['Loci'] }}</td>
+                            <td>
+                                {% if row['Motif'] and row['Motif'] != 'nan' %}
+                                    {{ row['Motif'] }}
+                                {% endif %}
+                            </td>
+                            <td>{{ row['Genomic feature'] }}</td>
+                            <td>
+                                {% set gain_value = row['Cell Type Gain'] %}
+                                {% if gain_value and gain_value != 'nan' %}
+                                    {% for celltype in row['Cell type gain'].strip('"').split(' ') %}
+                                        <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% set lost_value = row['Cell Type Lost'] %}
+                                {% if lost_value and lost_value != 'nan' %}
+                                    {% for celltype in row['Cell type lost'].strip('"').split(' ') %}
+                                        <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                            <td>{{ row['Constitutive'] }}</td>
+                            <td>{{ row['Occupancy score'] }}</td>
+                            <td>{{ row['Occupancy frequency'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Cell Type Info Section -->
+                <div class="separator-line"></div>
+                <h4 class="section-header" id="celltype-info">Cell Type Info</h4>
+                <a href="{{ url_for('download_table', table_name='celltype_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Cell Type Info</a>
+                <table id="celltype-table" class="table table-striped table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th title="Name of the cell type">Cell Type</th>
+                            <th title="Number of samples for this cell type">Sample Size</th>
+                            <th title="Proportion of datasets with binding at this site for the cell type">Cell Type Occupancy Frequency</th>
+                            <th title="Average RPKM value for this cell type at the binding site">Avg RPKM (Cell Type)</th>
+                            <th title="Average RPKM value for other cell types at the binding site">Avg RPKM (Others)</th>
+                            <th title="Significance of binding difference between this cell type and others">FDR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in celltype|sort(attribute='Occupancy frequency in cell type dataset', reverse=True) %}
+                        <tr>
+                            <td><a href="{{ url_for('search_celltype', celltype=row['Celltype']) }}">{{ row['Celltype'] }}</a></td>
+                            <td>{{ row['Sample size'] }}</td>
+                            <td>{{ row['Occupancy frequency in cell type dataset'] }}</td>
+                            <td>{{ row['Average RPKM (cell type)'] }}</td>
+                            <td>{{ row['Average RPKM (others)'] }}</td>
+                            <td>
+                              {% set fdr_val = row['-log10(FDR)'] %}
+                              {% if fdr_val is not none and fdr_val == fdr_val %}
+                                {{ "%.2e" | format(10 ** (-fdr_val)) }}
+                              {% else %}
+                                NA
+                              {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Sample Info Section -->
+                <div class="separator-line"></div>
+                <h4 class="section-header" id="sample-info">Sample Info</h4>
+                <a href="{{ url_for('download_table', table_name='sample_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Sample Info</a>
+                <table id="sample-table" class="table table-striped table-bordered mt-3">
+                    <thead>
+                        <tr>
+                            <th title="GEO Sample ID">GSM</th>
+                            <th title="Whether this site is occupied in the sample">Occupancy</th>
+                            <th title="RPKM value for this site in the sample">RPKM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in sample|sort(attribute='Occupancy', reverse=True) %}
+                        <tr>
+                            <td>
+                              <form method="POST" action="{{ url_for('search_gsm') }}" style="display: inline;">
+                                <input type="hidden" name="gsm" value="{{ row['GSM'] }}">
+                                <button type="submit" style="background: none; border: none; padding: 0; color: #007bff; text-decoration: underline; cursor: pointer;">
+                                  {{ row['GSM'] }}
+                                </button>
+                              </form>
+                            </td>
+                            <td>{{ row['Occupancy'] }}</td>
+                            <td>{{ row['RPKM'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/datatables.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#celltype-table').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true
+            });
+            $('#sample-table').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true
+            });
+        });
+    </script>
+</body>
+</html>

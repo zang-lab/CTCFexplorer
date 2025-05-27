@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .separator-line {
+            border-top: 2px solid #ddd;
+            margin: 40px 0;
+        }
+    </style>
+
+    <title>Cell Type Not Found</title>
+</head>
+<body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="separator-line"></div>
+    <div class="container my-5">
+        <h4 class="mb-4">The searched cell type <strong>{{ celltype }}</strong> is not in our database.</h4>
+        <p>You can explore the list of available cell types in our database:</p>
+        <a href="/available_celltypes" class="btn btn-secondary">View Available Cell Types</a>
+        <hr>
+        <a href="/" class="btn btn-primary">Back to Home</a>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

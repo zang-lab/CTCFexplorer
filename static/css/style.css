@@ -1,0 +1,122 @@
+/* Navbar styles */
+.navbar-dark .navbar-brand {
+    color: rgba(255, 255, 255, 0.9) !important; /* Softer white for branding */
+    font-weight: bold; /* Emphasize the brand text */
+    padding-left: 20px; /* Add spacing from the left */
+}
+
+.navbar-dark .nav-link {
+    position: relative;
+    color: rgba(255, 255, 255, 0.9) !important; /* Slightly softer white */
+    z-index: 1; /* Ensure text stays above pseudo-element */
+}
+
+.navbar-dark .nav-link::before {
+    content: ''; /* Creates the background effect */
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(120, 120, 120, 0.7); /* Lighter gray background for hover */
+    z-index: -1; /* Pushes background behind text */
+    transform: scale(0); /* Hidden initially */
+    transition: transform 0.3s ease-in-out; /* Smooth animation */
+    border-radius: 5px; /* Optional: Rounded corners for the effect */
+}
+
+.navbar-dark .nav-link:hover::before {
+    transform: scale(1); /* Expand to full size on hover */
+}
+
+/* Adjust search input styling */
+.search-input {
+    width: 300px; /* Adjust the width to your preference */
+    max-width: 100%; /* Ensure it doesn't exceed the container width */
+    padding: 8px; /* Add padding for better readability */
+    border: 1px solid #ccc; /* Optional: Add a border */
+    border-radius: 4px; /* Optional: Add rounded corners */
+}
+
+/* Adjust body padding for fixed header */
+body {
+    padding-top: 20px; /* Adjust the value to match the header's height */
+}
+
+/* Navbar background color */
+.navbar-dark {
+    background-color: #343a40 !important; /* Dark gray background */
+}
+
+/* 🚀 Fixed Sidebar */
+#sidebar {
+    position: fixed;
+    top: 75px; /* Adjust according to header height */
+    left: 0;
+    width: 250px; /* Ensures sidebar has enough space */
+    height: calc(100vh - 75px); /* Adjust height, subtract header height */
+    background-color: #f8f9fa; /* Light Bootstrap gray */
+    border-right: 2px solid #ddd; /* Subtle border */
+    overflow-y: auto; /* Allows scrolling if needed */
+    padding: 15px;
+    z-index: 1000; /* Ensure sidebar stays above content */
+}
+
+/* 🚀 Main Content */
+#main-content {
+    margin-left: 270px; /* Push main content to the right */
+    padding: 20px;
+    width: calc(100% - 270px); /* Adjust width dynamically */
+}
+
+/* Ensure full height and prevent collapsing */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.search-input {
+    font-size: 12px;
+    height: 28px;
+    padding: 3px 8px;
+}
+
+.search-label {
+    font-size: 12px;
+    font-weight: normal;
+    margin-bottom: 2px; /* Reduce space between label and input */
+}
+
+.search-button {
+    font-size: 12px;
+    padding: 3px 8px;
+    height: 28px;
+}
+
+/* 🔄 Reduce Spacing Between Sections */
+.search-section {
+    margin-bottom: 8px; /* Reduce space between sections */
+}
+
+.separator-line {
+    margin: 20px 0; /* Reduce space between sections */
+}
+
+.igv-track-label {
+    position: absolute !important; 
+    top: -18px !important; /* Moves the track name above the track */
+    left: 0 !important;
+    background: none !important; /* Remove background that overlaps data */
+    font-weight: bold !important;
+}
+
+/* Increase spacing above tracks to fit the labels */
+.igv-viewport {
+    margin-top: 20px !important; /* Push track content downward */
+}
+
+/* Ensure viewport content is not overlapped */
+.igv-viewport-content {
+    padding-top: 10px !important; /* Pushes data further down */
+}

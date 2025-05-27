@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS for styling and layout -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+    <!-- Custom CSS for additional styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+      .separator-line {
+          border-top: 1px solid #ddd;
+          margin: 20px 0;
+      }
+
+      .py-3 {
+            padding-top: 50px; /* Ensures space between header and content */
+        }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    {% include "header.html" %}
+
+    <div style="margin-top: 70px;"></div>
+    <div class="container my-5">
+      <div class="py-3">
+        <!-- Project Introduction -->
+        <p>
+          CTCFexplorer is a curated data resource encompassing 2,097 high-quality CTCF ChIP-seq datasets from NCBI GEO across 357 human cell types. We identified 531,851 high-confidence CTCF binding sites in the human genome. Among those, 24,614 sites were characterized as constitutive binding sites conserved across cell types. With its systematic approach and user-friendly interface, CTCFexplorer provides an invaluable resource for advancing research in 3D genomics and gene regulation. This framework can be extended to generate similar data resources for other DNA-binding proteins, facilitating broader insights into functional genomics and cancer research.
+        </p>
+        <p>
+          CTCFexplorer is implemented in Python and developed by the <a href="https://zanglab.github.io/index.html" target="_blank">Chongzhi Zang Lab</a> at the University of Virginia.
+        </p>
+
+        <!-- Divider for visual separation -->
+        <hr class="divider">
+
+        <!-- Search by Loci Section -->
+        <section>
+          <h4>Search by Chromosomal Coordinate</h4>
+          <form action="/search_loci" method="POST" onsubmit="handleEmptyInput(event, 'search-loci', 'chr7:27150000-27170000')">
+            <input type="text" id="search-loci" name="loci" class="search-input" placeholder="e.g., chr7:27150000-27170000">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </section>
+        <div class="separator-line"></div>
+
+        <!-- Search by Gene Section -->
+        <section>
+          <h4>Search by Gene Symbol</h4>
+          <form action="/search_gene" method="POST" onsubmit="handleEmptyInput(event, 'search-gene', 'HOXA9')">
+            <input type="text" id="search-gene" name="gene" class="search-input" placeholder="e.g., HOXA9">
+            <label for="extension-window">Extension Window (bp):</label>
+            <input type="number" id="extension-window" name="window" class="search-input no-spinner" placeholder="e.g., 5000" value="5000" min="0">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </section>
+        <div class="separator-line"></div>
+
+        <style>
+          .no-spinner {
+            width: 200px; /* Adjust width to make it shorter */
+            -moz-appearance: textfield; /* For Firefox */
+          }
+          .no-spinner::-webkit-inner-spin-button,
+          .no-spinner::-webkit-outer-spin-button {
+            -webkit-appearance: none; /* For Chrome, Safari, Edge */
+            margin: 0;
+          }
+        </style>
+
+        <!-- Search by GSM Section -->
+        <section>
+          <h4>Search by GSM ID</h4>
+          <form action="/search_gsm" method="POST" onsubmit="handleEmptyInput(event, 'search-gsm', 'GSM8195762')">
+            <input type="text" id="search-gsm" name="gsm" class="search-input" placeholder="e.g., GSM8195762">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </section>
+        <div class="separator-line"></div>
+
+        <!-- Search by Cell Type Section -->
+        <section>
+          <h4>Search by Cell Type</h4>
+          <form action="/search_celltype" method="POST" onsubmit="handleEmptyInput(event, 'search-celltype', 'HeLa')">
+            <input type="text" id="search-celltype" name="celltype" class="search-input" placeholder="e.g., HeLa">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </section>
+        <div class="separator-line"></div>
+
+        <!-- Search by Union ID Section -->
+        <section>
+          <h4>Search by Union ID</h4>
+          <form action="/search_union" method="POST" onsubmit="handleEmptyInput(event, 'search-union', '220000')">
+            <input type="text" id="search-union" name="union" class="search-input" placeholder="e.g., 220000">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </section>
+      </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS files -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+      function handleEmptyInput(event, inputId, defaultValue) {
+        const inputElement = document.getElementById(inputId);
+        if (!inputElement.value.trim()) {
+          event.preventDefault(); // Prevent form submission
+          inputElement.value = defaultValue; // Set the default value
+          event.target.submit(); // Resubmit the form with the default value
+        }
+      }
+    </script>
+
+    <script>
+      window.onload = function () {
+        const searchInputs = document.querySelectorAll('.search-input');
+        searchInputs.forEach(input => input.value = '');
+      };
+    </script>
+  </body>
+</html>

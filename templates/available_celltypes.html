@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <title>Available Cell Types</title>
+    <style>
+        .celltype-container {
+            display: flex;
+            flex-wrap: wrap;
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+        .celltype-container li {
+            flex: 0 0 calc(33.333% - 20px);
+            margin: 10px 10px;
+        }
+        .celltype-container li a {
+            text-decoration: none;
+            color: #007bff;
+        }
+        .celltype-container li a:hover {
+            text-decoration: underline;
+        }
+        .separator-line {
+            border-top: 2px solid #ddd;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="separator-line"></div>
+    <div class="container my-5">
+        <h4 class="mb-4">Available Cell Types in the Database</h4>
+        <hr>
+        <ul class="celltype-container">
+            {% for celltype in celltypes %}
+            <li>
+                <a href="{{ url_for('search_celltype') }}" onclick="event.preventDefault(); submitForm('{{ celltype }}');">{{ celltype }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="mt-4">
+            <a href="/" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
+
+    <form id="redirect-form" action="{{ url_for('search_celltype') }}" method="POST" style="display: none;">
+        <input type="hidden" id="celltype-input" name="celltype">
+    </form>
+
+    <script>
+        function submitForm(celltype) {
+            document.getElementById('celltype-input').value = celltype;
+            document.getElementById('redirect-form').submit();
+        }
+    </script>
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

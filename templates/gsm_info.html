@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Include IGV.js JavaScript -->
+    <script src="{{ url_for('static', filename='js/igv-3.1.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+
+    <title>GSM Info: {{ gsm['GSM'] }}</title>
+    <style>
+        .section-divider {
+            border-top: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        #igv-container {
+            width: 100%;
+            height: 550px;
+            margin-bottom: 40px;
+        }
+
+        .download-btn {
+            margin-bottom: 10px;
+        }
+
+                .fixed-sidebar {
+            position: fixed;
+            top: 75px;
+            width: 200px;
+            height: auto;
+            padding: 10px;
+        }
+
+        .content {
+            margin-left: 220px;
+        }
+
+        .separator-line {
+            border-top: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .nav {
+            flex-direction: column;
+        }
+
+        .nav-link {
+            font-size: 16px;
+        }
+
+        .section-header {
+            font-weight: bold;
+            margin-top: 10px;
+            scroll-margin-top: 100px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- 🚀 Fixed Sidebar -->
+            <nav id="sidebar">
+                <div class="sidebar-sticky p-3">
+
+                    <!-- 🔍 Search by Loci -->
+                    <section>
+                        <h6>Search by Chromosomal Coordinate</h6>
+                        <form action="/search_loci" method="POST" onsubmit="handleEmptyInput(event, 'search-loci', 'chr7:27150000-27170000')">
+                            <input type="text" id="search-loci" name="loci" class="search-input form-control mb-2" placeholder="e.g., chr7:27150000-27170000">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
+                        </form>
+                    </section>
+                    <div class="separator-line"></div>
+
+                    <!-- 🔍 Search by Gene -->
+                    <section>
+                        <h6>Search by Gene Symbol</h6>
+                        <form action="/search_gene" method="POST" onsubmit="handleEmptyInput(event, 'search-gene', 'HOXA9')">
+                            <input type="text" id="search-gene" name="gene" class="search-input form-control mb-2" placeholder="e.g., HOXA9">
+                            <label for="extension-window">Extension Window (bp):</label>
+                            <input type="number" id="extension-window" name="window" class="search-input no-spinner form-control mb-2" placeholder="e.g., 5000" value="5000" min="0">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
+                        </form>
+                    </section>
+                    <div class="separator-line"></div>
+
+                    <!-- 🔍 Search by GSM -->
+                    <section>
+                        <h6>Search by GSM ID</h6>
+                        <form action="/search_gsm" method="POST" onsubmit="handleEmptyInput(event, 'search-gsm', 'GSM8195762')">
+                            <input type="text" id="search-gsm" name="gsm" class="search-input form-control mb-2" placeholder="e.g., GSM8195762">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
+                        </form>
+                    </section>
+                    <div class="separator-line"></div>
+
+                    <!-- 🔍 Search by Cell Type -->
+                    <section>
+                        <h6>Search by Cell Type</h6>
+                        <form action="/search_celltype" method="POST" onsubmit="handleEmptyInput(event, 'search-celltype', 'HeLa')">
+                            <input type="text" id="search-celltype" name="celltype" class="search-input form-control mb-2" placeholder="e.g., HeLa">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
+                        </form>
+                    </section>
+                    <div class="separator-line"></div>
+
+                    <!-- 🔍 Search by Union ID -->
+                    <section>
+                        <h6>Search by Union ID</h6>
+                        <form action="/search_union" method="POST" onsubmit="handleEmptyInput(event, 'search-union', '220000')">
+                            <input type="text" id="search-union" name="union" class="search-input form-control mb-2" placeholder="e.g., 220000">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Search</button>
+                        </form>
+                    </section>
+                </div>
+            </nav>
+
+            <!-- 🔥 Main Content Area -->
+            <main role="main" id="main-content">
+                <div class="container my-5">
+                    <h4 class="mb-4">GSM Info: {{ gsm['GSM'] }}</h4>
+                    <div class="mb-4">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>GSE</th>
+                                    <th>In Situ Site</th>
+                                    <th>Cell Type</th>
+                                    <th>PubMed ID</th>
+                                    <th>Release Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ gsm['GSE'] }}</td>
+                                    <td>{{ gsm['In Situ Site'] }}</td>
+                                    <td>{{ gsm['Label'] }}</td>
+                                    <td>
+                                      {% set pmid = gsm['PubMed ID'] %}
+                                      {% if pmid and pmid != 'NaN' and pmid != 'nan' %}
+                                        {{ pmid }}
+                                      {% endif %}
+                                    </td>
+                                    <td>{{ gsm['Release Date'] }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="section-divider"></div>
+
+                    <h4 class="mb-4">QC</h4>
+                    <div class="mb-4">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Number of Peaks</th>
+                                    <th>FRiP</th>
+                                    <th>Motif Overlap Ratio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ gsm['Num Peaks'] }}</td>
+                                    <td>{{ gsm['FRiP'] }}</td>
+                                    <td>{{ gsm['motif_ov_ratio'] }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="section-divider"></div>
+
+                    <div id="igv-container"></div>
+                    <div class="section-divider"></div>
+
+                    <h5 class="mt-4">Downloads</h5>
+                    <ul>
+                        <li>
+                            <a href="{{ url_for('download_file', folder='narrowPeak', filename=gsm['GSM'] + '.narrowPeak') }}" class="btn btn-primary btn-sm download-btn">
+                                Download NarrowPeak File for {{ gsm['GSM'] }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+             </main>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const igvContainer = document.getElementById('igv-container');
+            const igvOptions = {
+                genome: "hg38",
+                locus: "chr1:1-1000000",
+                tracks: [
+                    {
+                        name: "{{ gsm['GSM'] }} BigWig",
+                        type: "wig",
+                        format: "bigwig",
+                        url: "{{ url_for('static', filename='data/bw/' + gsm['GSM'] + '.bw') }}",
+                        visibilityWindow: 1000000,
+                        autoscale: true
+                    },
+                    {
+                        name: "{{ gsm['GSM'] }} NarrowPeak",
+                        type: "annotation",
+                        format: "bed",
+                        url: "{{ url_for('static', filename='data/narrowPeak/' + gsm['GSM'] + '.narrowPeak') }}",
+                        visibilityWindow: 1000000,
+                        displayMode: "EXPANDED"
+                    },
+                    {
+                        name: "High-confidence",
+                        type: "annotation",
+                        format: "bed",
+                        url: "{{ url_for('static', filename='data/high-confidence.bed') }}",
+                        visibilityWindow: 1000000,
+                        displayMode: "EXPANDED"
+                    },
+                    {
+                        name: "Constitutive",
+                        type: "annotation",
+                        format: "bed",
+                        url: "{{ url_for('static', filename='data/constitutive.bed') }}",
+                        visibilityWindow: 1000000,
+                        displayMode: "EXPANDED"
+                    },
+                    {
+                        name: "Motif",
+                        type: "annotation",
+                        format: "bed",
+                        url: "{{ url_for('static', filename='data/motif.bed') }}",
+                        visibilityWindow: 1000000,
+                        displayMode: "EXPANDED",
+                        showFeatureName: false,  // Prevents motif sequences (e.g., "tggtct") from showing
+                        colorBy: "strand",  // Enable strand-based coloring
+                        getColor: function (feature) {
+                            return feature.strand === "-" ? "blue" : "green";  // Color - strand blue, + strand green
+                        },
+                    }
+                ]
+            };
+
+            igv.createBrowser(igvContainer, igvOptions).then(() => {
+                console.log("Genome browser initialized for GSM: {{ gsm['GSM'] }}");
+            });
+        });
+    </script>
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+
+    <script>
+      function handleEmptyInput(event, inputId, defaultValue) {
+        const inputElement = document.getElementById(inputId);
+        if (!inputElement.value.trim()) {
+          event.preventDefault(); // Prevent form submission
+          inputElement.value = defaultValue; // Set the default value
+          event.target.submit(); // Resubmit the form with the default value
+        }
+      }
+    </script>
+
+    <script>
+      window.onload = function () {
+        const searchInputs = document.querySelectorAll('.search-input');
+        searchInputs.forEach(input => input.value = '');
+      };
+    </script>
+</body>
+</html>

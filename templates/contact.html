@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        h4 {
+            color: #063970;
+        }
+        .highlight {
+            font-weight: bold;
+        }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="container my-5">
+        <div class="py-3">
+          <h4 class="mt-4 highlight">Contact Information</h4>
+          <p>If you have any questions, please contact:</p>
+          <ul>
+            <li>Dr. Shengyuan Wang – <a href="mailto:vdj6tq@virginia.edu">vdj6tq@virginia.edu</a></li>
+            <li>Dr. Chongzhi Zang – <a href="mailto:zang@virginia.edu">zang@virginia.edu</a></li>
+          </ul>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  </body>
+</html>

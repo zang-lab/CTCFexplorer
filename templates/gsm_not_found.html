@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Shengyuan Wang">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        .container.my-5 {
+            padding-top: 30px; /* Ensures space between header and content */
+        }
+        .highlight {
+            font-weight: bold;
+        }
+        .section-spacing {
+            margin-top: 30px; /* Extra space between High-confidence and Constitutive sections */
+        }
+    </style>
+</head>
+<body class="bg-light">
+    {% include "header.html" %}
+
+    <div class="container my-5">
+        <h4 class="mt-4 highlight">GSM search error</h4>
+        <p>{{ error }}</p>
+
+        {% if is_valid_gsm %}
+        <p>The GSM ID you searched for — <strong>{{ gsm }}</strong> - is not currently included in our database.</p>
+        <p>Please ensure the dataset is a human CTCF ChIP-seq experiment. If it is, possible reasons for its absence include:</p>
+        <ul>
+            <li>The dataset did not pass quality control or had fewer than 10,000 called peaks.</li>
+            <li>The dataset used non-specific antibodies, or included antibodies other than CTCF.</li>
+            <li>The dataset involved treatments that may alter CTCF binding.</li>
+            <li>The dataset was released after March 3, 2025 — our database only includes datasets available before this date.</li>
+        </ul>
+        <p>If you believe this dataset should be included, please contact the database administrator for further assistance.</p>
+        {% endif %}
+        <a href="{{ url_for('index') }}" class="btn btn-primary mt-3">Back to Search</a>
+    </div>
+
+    {% include "footer.html" %}
+
+    <!-- Local JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.7.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
