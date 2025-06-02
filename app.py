@@ -8,8 +8,8 @@ import psycopg2.extras
 
 
 # Define paths
-TEMPLATES_PATH = "/Users/vdj6tq/Library/CloudStorage/Dropbox/Projects/CTCFDB/DB/templates"
-STATIC_PATH = "/Users/vdj6tq/Library/CloudStorage/Dropbox/Projects/CTCFDB/DB/static"
+TEMPLATES_PATH = "templates"
+STATIC_PATH = "static"
 
 # Dictionary of valid hg38 chromosome sizes
 HG38_CHROM_SIZES = {
