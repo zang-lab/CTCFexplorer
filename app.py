@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, Response, abort, send_file, redirect, url_for
-import re
 import os
 import csv
 from io import StringIO
@@ -8,8 +7,8 @@ import psycopg2.extras
 
 
 # Define paths
-TEMPLATES_PATH = "/Users/vdj6tq/Library/CloudStorage/Dropbox/Projects/CTCFDB/DB/templates"
-STATIC_PATH = "/Users/vdj6tq/Library/CloudStorage/Dropbox/Projects/CTCFDB/DB/static"
+TEMPLATES_PATH = "/Users/vdj6tq/Library/CloudStorage/Dropbox/Projects/CTCFexplorer/DB/templates"
+STATIC_PATH = "/Users/vdj6tq/Library/CloudStorage/Dropbox/Projects/CTCFexplorer/DB/static"
 
 # Dictionary of valid hg38 chromosome sizes
 HG38_CHROM_SIZES = {
@@ -26,7 +25,7 @@ app = Flask(__name__, template_folder=TEMPLATES_PATH, static_folder=STATIC_PATH)
 
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname=os.environ.get("DB_NAME", "CTCFDB_PostgreSQL"),
+        dbname=os.environ.get("DB_NAME", "CTCFexplorer_local"),
         user=os.environ.get("DB_USER", "postgres"),
         password=os.environ.get("DB_PASSWORD", ""),  # must be set in deployment
         host=os.environ.get("DB_HOST", "localhost"),
@@ -34,7 +33,6 @@ def get_db_connection():
     )
     conn.autocommit = True
     return conn
-
 
 # Route for the home page
 @app.route('/')
@@ -149,39 +147,38 @@ def search_gsm():
     )
 
 # Route for searching by cell type
+import re
+
 @app.route('/search_celltype', methods=['GET', 'POST'])
 def search_celltype():
     if request.method == 'POST':
-        # Handle POST request from a search form
         celltype = request.form['celltype'].strip()
     else:
-        # Handle GET request when a celltype link is clicked
         celltype = request.args.get('celltype', '').strip()
 
-    # Normalize the cell type input and query case-insensitively
-    normalized_input = re.sub(r'[-_/\\#]', '', celltype).lower()
+    if not celltype:
+        return render_template('celltype_not_found.html', celltype=celltype)
+
+    normalized_input = celltype.lower()
 
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-    # Query for normalized cell type
+    # Match exact label (case-insensitive)
     cursor.execute("""
         SELECT DISTINCT "Label"
         FROM "CTCFLabels"
-        WHERE LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE("Label", '-', ''), '_', ''), '/', ''), '\\', ''), '#', '')) = %s
+        WHERE LOWER("Label") = %s
     """, (normalized_input,))
-    normalized_result = cursor.fetchone()
+    match_result = cursor.fetchone()
 
-    if not normalized_result:
+    if not match_result:
         conn.close()
-        return render_template(
-            'celltype_not_found.html',
-            celltype=celltype
-        )
+        return render_template('celltype_not_found.html', celltype=celltype)
 
-    normalized_celltype = normalized_result["Label"]
+    normalized_celltype = match_result["Label"]
 
-    # Query for GSMs and union bindings
+    # Exact GSM label matches
     cursor.execute("""
         SELECT *
         FROM "CTCFLabels"
@@ -189,19 +186,21 @@ def search_celltype():
     """, (normalized_celltype,))
     gsm_results = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT *
-        FROM "BasicInfo"
-        WHERE "Cell type gain" LIKE %s
-    """, (f'%{normalized_celltype}%',))
-    gain_results = cursor.fetchall()
+    # Load all BasicInfo entries for filtering in Python
+    cursor.execute("""SELECT * FROM "BasicInfo" """)
+    all_rows = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT *
-        FROM "BasicInfo"
-        WHERE "Cell type lost" LIKE %s
-    """, (f'%{normalized_celltype}%',))
-    loss_results = cursor.fetchall()
+    def split_celltypes(field_value):
+        if not field_value:
+            return []
+        # Split by semicolon, comma, or whitespace
+        return [token.strip().lower() for token in re.split(r'[;,]\s*|\s+', field_value)]
+
+    def matches_exact_celltype(field_value):
+        return normalized_input in split_celltypes(field_value)
+
+    gain_results = [row for row in all_rows if matches_exact_celltype(row.get("Cell type gain"))]
+    loss_results = [row for row in all_rows if matches_exact_celltype(row.get("Cell type lost"))]
 
     conn.close()
 
@@ -540,4 +539,4 @@ def available_celltypes():
 
 # Run the Flask app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.environ.get('FLASK_ENV') == 'development')
