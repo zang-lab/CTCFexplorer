@@ -22,9 +22,9 @@ Merge overlapping summit-centered extended peak regions using the distance cutof
 
 `s4_occupancy_matrix`
 Generate a **binary occupancy matrix**:
-- **Rows** = union binding sites  
-- **Columns** = samples  
-- **Values** = `1` if a sample contains a peak in that site, `0` otherwise
+- Rows represent union binding sites.
+- Columns represent samples.
+- Values indicate whether a peak is present (1) or absent (0) in each sample at each union site.
 
 
 `s5_count_reads_on_union`
