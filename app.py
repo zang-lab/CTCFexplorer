@@ -6,7 +6,6 @@ from io import StringIO
 import psycopg2
 import psycopg2.extras
 
-
 # Define paths
 TEMPLATES_PATH = "templates"
 STATIC_PATH = "static"
@@ -24,6 +23,7 @@ HG38_CHROM_SIZES = {
 # Initialize Flask app with the templates folder path
 app = Flask(__name__, template_folder=TEMPLATES_PATH, static_folder=STATIC_PATH)
 
+
 def get_db_connection():
     conn = psycopg2.connect(
         dbname=os.environ.get("DB_NAME", "CTCFDB_PostgreSQL"),
@@ -40,6 +40,7 @@ def get_db_connection():
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 # Route for searching loci
 @app.route('/search_loci', methods=['POST'])
@@ -114,6 +115,7 @@ def search_loci():
             error=f"No union binding site found for {search_loci}. You may try increasing the search range or check for potential errors in the input format."
         )
 
+
 # Route to search by GSM
 @app.route('/search_gsm', methods=['POST'])
 def search_gsm():
@@ -147,6 +149,7 @@ def search_gsm():
         'gsm_info.html',
         gsm=result  # result is already a dict-like object
     )
+
 
 # Route for searching by cell type
 @app.route('/search_celltype', methods=['GET', 'POST'])
@@ -212,6 +215,7 @@ def search_celltype():
         loss_results=loss_results
     )
 
+
 # Route to view details for a specific Union ID
 @app.route('/union_info/<union_id>')
 def union_info(union_id):
@@ -265,6 +269,7 @@ def union_info(union_id):
         celltype=[dict(row) for row in celltype],
         sample=[dict(row) for row in sample]
     )
+
 
 @app.route('/search_gene', methods=['POST'])
 @app.route('/search_gene', methods=['POST'])
@@ -356,6 +361,7 @@ def search_gene():
         no_overlaps=(len(overlapping_results) == 0)
     )
 
+
 @app.route('/search_union', methods=['POST'])
 def search_union():
     search_union = request.form['union'].strip()
@@ -399,6 +405,7 @@ def search_union():
         search_loci=search_union,
         error=f"Union ID '{search_union}' is excluded from the database as it is not a high-confidence binding site."
     )
+
 
 @app.route('/download_table/<table_name>/<identifier>')
 def download_table(table_name, identifier):
@@ -475,7 +482,7 @@ def download_table(table_name, identifier):
         output = StringIO()
         writer = csv.writer(output)
         writer.writerow(column_headers)  # Write headers
-        writer.writerows(rows)          # Write data rows
+        writer.writerows(rows)  # Write data rows
         output.seek(0)
         return output.getvalue()
 
@@ -491,6 +498,7 @@ def download_table(table_name, identifier):
         mimetype='text/csv',
         headers={"Content-Disposition": f"attachment; filename={filename}"}
     )
+
 
 @app.route('/download_file/<folder>/<filename>')
 def download_file(folder, filename):
@@ -508,17 +516,21 @@ def download_file(folder, filename):
         download_name=filename
     )
 
+
 @app.route('/contact')
 def contact():
     return render_template('contact.html')
+
 
 @app.route('/help')
 def help():
     return render_template('help.html')
 
+
 @app.route('/download')
 def download():
     return render_template('download.html')
+
 
 @app.route('/available_celltypes')
 def available_celltypes():
@@ -539,4 +551,4 @@ def available_celltypes():
 
 # Run the Flask app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
