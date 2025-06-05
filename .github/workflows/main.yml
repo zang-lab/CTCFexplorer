@@ -81,7 +81,7 @@ jobs:
         with:
           commit_message: "[skip ci] Update Version to Helm - ${{ env.TAG_NAME }}"
           branch: main
-          file_pattern: 'kubernetes/gauss-app-runner/values.yaml'
+          file_pattern: 'kubernetes/ctcfexplorer/values.yaml'
           commit_user_name: GitHub Actions Bot
           commit_user_email: github@virginia.edu
           commit_author: GitHub Actions <github@virginia.edu>
