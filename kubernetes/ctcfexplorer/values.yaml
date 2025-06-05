@@ -37,7 +37,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 8501
+  port: 5000
 ingress:
   enabled: true
   className: nginx
