@@ -15,8 +15,8 @@ permissions:
 jobs:
   build-for-git:
     runs-on: ubuntu-latest
-    env:
-      GHCR_REPO: ghcr.io/${{ github.repository_lower }}
+#    env:
+#      GHCR_REPO: ghcr.io/${{ github.repository_lower }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,9 +27,8 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-#      - name: Set the env
-#        id: set_env
-#        run: echo "BUILD_PROJ=ctcfexplorer" >> $GITHUB_ENV
+      - name: Set GHCR_REPO environment variable
+        run: echo "GHCR_REPO=ghcr.io/${{ github.repository_lower }}" >> $GITHUB_ENV
 
       - name: Extract tag name for prod release
         if: startsWith(github.ref, 'refs/tags/prod-')
