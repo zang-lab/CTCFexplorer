@@ -15,6 +15,8 @@ permissions:
 jobs:
   build-for-git:
     runs-on: ubuntu-latest
+    env:
+      GHCR_REPO: ghcr.io/${{ github.repository }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -25,23 +27,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set the env
-        id: set_env
-        run: echo "BUILD_PROJ=ctcfexplorer" >> $GITHUB_ENV
+#      - name: Set the env
+#        id: set_env
+#        run: echo "BUILD_PROJ=ctcfexplorer" >> $GITHUB_ENV
 
-#      - name: Extract tag name for prod release
-#        if: startsWith(github.ref, 'refs/tags/prod-')
-#        run: |
-#          TAG_NAME="${GITHUB_REF#refs/tags/}"
-#           yq eval ".image.tag = \"${TAG_NAME}\"" -i kubernetes/ctcfexplorer/values.yaml
-#          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+      - name: Extract tag name for prod release
+        if: startsWith(github.ref, 'refs/tags/prod-')
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+           yq eval ".image.tag = \"${TAG_NAME}\"" -i kubernetes/ctcfexplorer/values.yaml
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
-#      - name: Login to GHCR
-#        uses: docker/login-action@v3
-#        with:
-#          registry: ghcr.io
-#          username: ${{ secrets.GHCR_USERNAME }}
-#          password: ${{ secrets.GHCR_PAT }}
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_PAT }}
 
       - name: Build and push service for non main branch
         if: github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/prod-')
@@ -50,9 +52,9 @@ jobs:
           platforms: linux/amd64
           context: .
           file: ./Dockerfile
-#          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/bivariate-sequential-designs/${{ env.BUILD_PROJ }}:${{ github.ref_name }}
+            $GHCR_REPO:${{ github.ref_name }}
 
       - name: Build and push service for main branch
         if: github.ref == 'refs/heads/main'
@@ -61,10 +63,10 @@ jobs:
           platforms: linux/amd64
           context: .
           file: ./Dockerfile
-#          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            ghcr.io/bivariate-sequential-designs/${{ env.BUILD_PROJ }}:${{ github.ref_name }}
-            ghcr.io/bivariate-sequential-designs/${{ env.BUILD_PROJ }}:latest
+            $GHCR_REPO:${{ github.ref_name }}
+            $GHCR_REPO:latest
 
       - name: Build and push service for prod tag
         if: startsWith(github.ref, 'refs/tags/prod-')
@@ -74,7 +76,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/bivariate-sequential-designs/${{ env.BUILD_PROJ }}:${{ env.TAG_NAME }}
+            $GHCR_REPO:${{ env.TAG_NAME }}
 
       - name: Push Prod Version to main branch
         if: startsWith(github.ref, 'refs/tags/prod-')
