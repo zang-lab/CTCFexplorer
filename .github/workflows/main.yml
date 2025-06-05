@@ -16,7 +16,7 @@ jobs:
   build-for-git:
     runs-on: ubuntu-latest
     env:
-      GHCR_REPO: ghcr.io/${{ github.repository }}
+      GHCR_REPO: ghcr.io/${{ github.repository_lower }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
