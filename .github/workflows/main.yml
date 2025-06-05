@@ -54,7 +54,7 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            $GHCR_REPO:${{ github.ref_name }}
+            ${{ env.GHCR_REPO }}:${{ github.ref_name }}
 
       - name: Build and push service for main branch
         if: github.ref == 'refs/heads/main'
@@ -65,8 +65,8 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
-            $GHCR_REPO:${{ github.ref_name }}
-            $GHCR_REPO:latest
+            ${{ env.GHCR_REPO }}:${{ github.ref_name }}
+            ${{ env.GHCR_REPO }}:latest
 
       - name: Build and push service for prod tag
         if: startsWith(github.ref, 'refs/tags/prod-')
@@ -76,7 +76,7 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            $GHCR_REPO:${{ env.TAG_NAME }}
+            ${{ env.GHCR_REPO }}:${{ env.TAG_NAME }}
 
       - name: Push Prod Version to main branch
         if: startsWith(github.ref, 'refs/tags/prod-')
