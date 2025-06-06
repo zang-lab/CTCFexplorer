@@ -39,18 +39,18 @@ service:
   type: ClusterIP
   port: 5000
 ingress:
-  enabled: true
-  className: nginx
-  annotations: {}
-  hosts:
-    - host: ctcfexplorer.pods.uvarc.io
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - secretName: ctcfexplorer-nginx-tls-ingress-secret
-      hosts:
-        - ctcfexplorer.pods.uvarc.io
+  enabled: false
+#  className: nginx
+#  annotations: {}
+#  hosts:
+#    - host: ctcfexplorer.pods.uvarc.io
+#      paths:
+#        - path: /
+#          pathType: Prefix
+#  tls:
+#    - secretName: ctcfexplorer-nginx-tls-ingress-secret
+#      hosts:
+#        - ctcfexplorer.pods.uvarc.io
 resources:
   limits:
     cpu: 500m
