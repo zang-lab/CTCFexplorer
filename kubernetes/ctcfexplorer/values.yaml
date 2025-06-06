@@ -48,7 +48,7 @@ ingress:
         - path: /
           pathType: Prefix
   tls:
-    - secretName: ctcf-explorer-nginx-tls-ingress-secret
+    - secretName: ctcfexplorer-nginx-tls-ingress-secret
       hosts:
         - ctcfexplorer.pods.uvarc.io
 resources:
