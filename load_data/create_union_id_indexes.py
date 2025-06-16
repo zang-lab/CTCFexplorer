@@ -17,7 +17,7 @@ conn = psycopg2.connect(
 )
 # ────────────────────────────────────────────────────────────────────────
 
-# we need autocommit for CREATE INDEX CONCURRENTLY
+# autocommit for CREATE INDEX CONCURRENTLY
 conn.autocommit = True
 
 with conn.cursor() as cur:

@@ -10,7 +10,7 @@
 
 set -euo pipefail    # abort on any error, undefined var, or failed pipeline
 
-# ── Connection to your master PostgreSQL ──────────────────────────────
+# ── Connection to master PostgreSQL ──────────────────────────────
 PGDATA=$(ps -ef | grep '[p]ostgres' | grep ' -D ' | awk '{for (i=1;i<=NF;i++) if ($i=="-D") print $(i+1)}' | head -n1)
 
 if [ -z "$PGDATA" ]; then
