@@ -7,7 +7,7 @@ image:
   repository: "ghcr.io/zang-lab/ctcfexplorer"
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "prod-1.0.3"
+  tag: "prod-1.0.4"
 imagePullSecrets:
   - name: "ghcr-regcred"
 nameOverride: ""
@@ -81,14 +81,12 @@ volumes:
   - name: ctcf-narrowpeak
     persistentVolumeClaim:
       claimName: ctcf-narrowpeak-pvc
-
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
   - name: ctcf-bw
     mountPath: /app/static/data/bw
   - name: ctcf-narrowpeak
     mountPath: /app/static/data/narrowPeak
-
 nodeSelector: {}
 tolerations: []
 affinity: {}
