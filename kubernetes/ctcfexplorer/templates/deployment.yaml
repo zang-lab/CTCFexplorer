@@ -30,43 +30,43 @@ spec:
       serviceAccountName: {{ include "ctcfexplorer.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      initContainers:
-        - name: init-restore-pgdump
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ 'sh', '-c', "/app/load_data/restore_pg_dumps.slurm" ]
-          env:
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: ctcfdb-postgresql-secret
-                  key: DB_NAME
-            - name: DB_USER
-              valueFrom:
-                secretKeyRef:
-                  name: ctcfdb-postgresql-secret
-                  key: DB_USER
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: ctcfdb-postgresql-secret
-                  key: DB_PASSWORD
-            - name: DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: ctcfdb-postgresql-secret
-                  key: DB_HOST
-            - name: DB_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: ctcfdb-postgresql-secret
-                  key: DB_PORT
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
-          volumeMounts:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+#      initContainers:
+#        - name: init-restore-pgdump
+#          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+#          imagePullPolicy: {{ .Values.image.pullPolicy }}
+#          command: [ 'sh', '-c', "/app/load_data/restore_pg_dumps.slurm" ]
+#          env:
+#            - name: DB_NAME
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ctcfdb-postgresql-secret
+#                  key: DB_NAME
+#            - name: DB_USER
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ctcfdb-postgresql-secret
+#                  key: DB_USER
+#            - name: DB_PASSWORD
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ctcfdb-postgresql-secret
+#                  key: DB_PASSWORD
+#            - name: DB_HOST
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ctcfdb-postgresql-secret
+#                  key: DB_HOST
+#            - name: DB_PORT
+#              valueFrom:
+#                secretKeyRef:
+#                  name: ctcfdb-postgresql-secret
+#                  key: DB_PORT
+#          resources:
+#            {{- toYaml .Values.resources | nindent 12 }}
+#          {{- with .Values.volumeMounts }}
+#          volumeMounts:
+#            {{- toYaml . | nindent 12 }}
+#          {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
