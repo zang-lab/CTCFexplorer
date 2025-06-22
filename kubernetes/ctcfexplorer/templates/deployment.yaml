@@ -33,7 +33,7 @@ spec:
       initContainers:
         - name: init-restore-pgdump
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: { { .Values.image.pullPolicy } }
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ 'sh', '-c', "/app/load_data/restore_pg_dumps.slurm" ]
           env:
             - name: DB_NAME
