@@ -38,6 +38,7 @@ fi
 # ───────────────────────────────────────────────────────────────────────
 
 DUMP_DIR=/project/zanglab_project/vdj6tq/project_data/CTCFexplorer/hs/pg_dumps
+SCHEMA_SQL=/project/zanglab_project/vdj6tq/project_data/CTCFexplorer/hs/schema.sql
 NUM_DUMPS=$(ls -1 "$DUMP_DIR"/dump_*.sql 2>/dev/null | wc -l)
 
 if [[ $NUM_DUMPS -eq 0 ]]; then
@@ -46,6 +47,13 @@ if [[ $NUM_DUMPS -eq 0 ]]; then
 fi
 
 echo "Replaying $NUM_DUMPS dump files …"
+
+# Load schema first
+echo "Loading schema from $SCHEMA_SQL ..."
+psql -v ON_ERROR_STOP=1 -f "$SCHEMA_SQL" || {
+    echo "ERROR: Failed to load schema."
+    exit 1
+}
 
 # replay in sorted order to be deterministic
 for f in $(ls "$DUMP_DIR"/dump_*.sql | sort -V); do
