@@ -24,6 +24,11 @@ conn.autocommit = True
 
 with conn.cursor() as cur:
     print("Creating idx_union_id_basic …")
+
+    cur.execute("""
+        VACUUM ANALYZE "BasicInfo", "SampleInfo", "CelltypeInfo";
+    """)
+
     cur.execute("""
         CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_union_id_basic
           ON "BasicInfo" ("Union ID");

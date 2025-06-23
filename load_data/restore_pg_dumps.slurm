@@ -53,9 +53,6 @@ for f in $(ls "$DUMP_DIR"/dump_*.sql | sort -V); do
     psql -v ON_ERROR_STOP=1 -f "$f"
 done
 
-echo "Running VACUUM ANALYZE …"
-psql -c 'VACUUM ANALYZE "BasicInfo", "SampleInfo", "CelltypeInfo";'
-
 echo "Merge job complete."
 
 # create index
