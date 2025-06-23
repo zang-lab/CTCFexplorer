@@ -9,10 +9,11 @@ from psycopg2.extras import execute_values
 # ── CONFIGURATION ────────────────────────────────────────────────────────
 SUPP_DIR = Path(__file__).parent.resolve()
 
-DB_HOST     = os.environ["PGHOST"]
-DB_PORT     = os.environ["PGPORT"]
-DB_NAME     = os.environ["PGDATABASE"]
-DB_USER     = os.environ["PGUSER"]
+DB_HOST     = os.environ["DB_HOST"]
+DB_PORT     = os.environ["DB_PORT"]
+DB_NAME     = os.environ["DB_NAME"]
+DB_USER     = os.environ["DB_USER"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
 # ────────────────────────────────────────────────────────────────────────
 
 def get_connection():
@@ -20,7 +21,8 @@ def get_connection():
         host=DB_HOST,
         port=DB_PORT,
         dbname=DB_NAME,
-        user=DB_USER
+        user=DB_USER,
+        password=DB_PASSWORD
     )
 
 def create_ctcf_labels_table(conn):

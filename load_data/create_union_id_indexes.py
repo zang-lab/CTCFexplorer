@@ -2,18 +2,20 @@
 import os, psycopg2
 
 # ── pick up TCP details from the environment ───────────────────────────
-PGHOST     = os.environ["PGHOST"]
-PGPORT     = os.environ["PGPORT"]
-PGDATABASE = os.environ["PGDATABASE"]
-PGUSER     = os.environ["PGUSER"]
+DB_HOST     = os.environ["DB_HOST"]
+DB_PORT     = os.environ["DB_PORT"]
+DB_NAME     = os.environ["DB_NAME"]
+DB_USER     = os.environ["DB_USER"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
 # ────────────────────────────────────────────────────────────────────────
 
 # Connect via TCP
 conn = psycopg2.connect(
-    host     = PGHOST,
-    port     = PGPORT,
-    dbname   = PGDATABASE,
-    user     = PGUSER,
+    host     = DB_HOST,
+    port     = DB_PORT,
+    dbname   = DB_NAME,
+    user     = DB_USER,
+    password = DB_PASSWORD
 )
 # ────────────────────────────────────────────────────────────────────────
 
