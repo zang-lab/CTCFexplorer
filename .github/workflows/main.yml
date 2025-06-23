@@ -48,7 +48,7 @@ jobs:
         with:
           platforms: linux/amd64
           context: .
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ env.GHCR_REPO }}:${{ github.ref_name }}
@@ -59,7 +59,7 @@ jobs:
         with:
           platforms: linux/amd64
           context: .
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ${{ env.GHCR_REPO }}:${{ github.ref_name }}
@@ -70,7 +70,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: ./docker/Dockerfile
           push: true
           tags: |
             ${{ env.GHCR_REPO }}:${{ env.TAG_NAME }}
