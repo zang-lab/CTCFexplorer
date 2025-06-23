@@ -1,31 +1,44 @@
 #!/bin/bash
+set -euo pipefail
 
-# ── Manual configuration ────────────────────────────────
-DATA_DIR="/home/vdj6tq/pg17.2_data"
-PGHOST="$DATA_DIR"
-PGPORT=55432
-PGDATABASE="CTCFexplorer"
-PGUSER="vdj6tq"
-LOGFILE="$DATA_DIR/postgres.log"
-# ─────────────────────────────────────────────────────────
+# ── Load required environment variables ─────────────────
+: "${PGHOST:?PGHOST is not set}"
+: "${PGPORT:?PGPORT is not set}"
+: "${PGDATABASE:?PGDATABASE is not set}"
+: "${PGUSER:?PGUSER is not set}"
+: "${LOGFILE:?LOGFILE is not set}"
+# ────────────────────────────────────────────────────────
 
-export PGHOST PGPORT PGDATABASE PGUSER
+export PGHOST PGPORT PGDATABASE PGUSER LOGFILE
 
-echo "Using data directory: $DATA_DIR"
+echo "Using PGHOST: $PGHOST"
 echo "Connecting as user: $PGUSER to database: $PGDATABASE on port: $PGPORT"
 
-# ── Ensure the master server is running ─────────────────
-if ! pg_ctl -D "$DATA_DIR" status >/dev/null 2>&1; then
+# ── Ensure the PostgreSQL server is running ─────────────
+if ! pg_ctl -D "$PGHOST" status >/dev/null 2>&1; then
     echo "Starting PostgreSQL server..."
-    pg_ctl -D "$DATA_DIR" \
+    pg_ctl -D "$PGHOST" \
            -o "-p $PGPORT -k $PGHOST" \
            -l "$LOGFILE" start
     sleep 2
 fi
-# ───────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────────────
 
 DUMP_DIR=app/pg_dumps
 SCHEMA_SQL=app/schema.sql
+
+# Check schema file exists
+if [[ ! -f "$SCHEMA_SQL" ]]; then
+    echo "ERROR: schema file not found at $SCHEMA_SQL"
+    exit 1
+fi
+
+# Check for dump files
+NUM_DUMPS=$(ls -1 "$DUMP_DIR"/dump_*.sql 2>/dev/null | wc -l)
+if [[ $NUM_DUMPS -eq 0 ]]; then
+    echo "ERROR: no dump_*.sql files found in $DUMP_DIR"
+    exit 1
+fi
 
 # Load schema first
 echo "Loading schema from $SCHEMA_SQL ..."
@@ -46,13 +59,13 @@ done
 
 echo "Merge job complete."
 
-# create index
+# Create index
 echo "Running index creation …"
 python create_union_id_indexes.py
 
 echo "All tasks finished."
 
-# create supplementary
+# Create supplementary tables
 echo "Running index creation …"
 python create_supplementary_tables.py
 
