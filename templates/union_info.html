@@ -101,7 +101,7 @@
                             </td>
                             <td>{{ row['Genomic feature'] }}</td>
                             <td>
-                                {% set gain_value = row['Cell Type Gain'] %}
+                                {% set gain_value = row['Cell type gain'] %}
                                 {% if gain_value and gain_value != 'nan' %}
                                     {% for celltype in row['Cell type gain'].strip('"').split(' ') %}
                                         <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
@@ -109,7 +109,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {% set lost_value = row['Cell Type Lost'] %}
+                                {% set lost_value = row['Cell type lost'] %}
                                 {% if lost_value and lost_value != 'nan' %}
                                     {% for celltype in row['Cell type lost'].strip('"').split(' ') %}
                                         <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
