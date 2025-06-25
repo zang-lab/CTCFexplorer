@@ -15,8 +15,8 @@ export DB_HOST DB_PORT DB_NAME DB_USER DB_PASSWORD LOGFILE
 echo "Using DB_HOST: $DB_HOST"
 echo "Connecting as user: $DB_USER to database: $DB_NAME on port: $DB_PORT"
 
-DUMP_DIR=app/pg_dumps
-SCHEMA_SQL=app/schema.sql
+DUMP_DIR=/app/pg_dumps
+SCHEMA_SQL=/app/schema.sql
 
 # Check schema file exists
 if [[ ! -f "$SCHEMA_SQL" ]]; then
