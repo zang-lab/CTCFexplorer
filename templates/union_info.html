@@ -103,7 +103,7 @@
                             <td>
                                 {% set gain_value = row['Cell type gain'] %}
                                 {% if gain_value and gain_value != 'nan' %}
-                                    {% for celltype in row['Cell type gain'].strip('"').split(' ') %}
+                                    {% for celltype in gain_value.replace('"', '').strip().split(' ') %}
                                         <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
                                     {% endfor %}
                                 {% endif %}
@@ -111,7 +111,7 @@
                             <td>
                                 {% set lost_value = row['Cell type lost'] %}
                                 {% if lost_value and lost_value != 'nan' %}
-                                    {% for celltype in row['Cell type lost'].strip('"').split(' ') %}
+                                    {% for celltype in lost_value.replace('"', '').strip().split(' ') %}
                                         <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
                                     {% endfor %}
                                 {% endif %}
