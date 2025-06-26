@@ -424,10 +424,10 @@ def download_table(table_name, identifier):
             ORDER BY "Occupancy frequency in cell type dataset" DESC
         ''',
         "sample_info": '''
-            SELECT GSM, Occupancy, RPKM
+            SELECT "GSM", "Occupancy", "RPKM"
             FROM "SampleInfo"
             WHERE "Union ID" = %s
-            ORDER BY Occupancy DESC
+            ORDER BY "Occupancy" DESC
         ''',
         "gsm_results": """
             SELECT "GSM", 
