@@ -54,11 +54,11 @@
 
     <div class="container-fluid">
         <div class="row">
-            <!-- 🚀 Fixed Sidebar -->
+            <!-- Fixed Sidebar -->
             <nav id="sidebar">
                 <div class="sidebar-sticky p-3">
 
-                    <!-- 🔍 Search by Loci -->
+                    <!-- Search by Loci -->
                     <section>
                         <h6>Search by Chromosomal Coordinate</h6>
                         <form action="/search_loci" method="POST" onsubmit="handleEmptyInput(event, 'search-loci', 'chr7:27150000-27170000')">
@@ -68,7 +68,7 @@
                     </section>
                     <div class="separator-line"></div>
 
-                    <!-- 🔍 Search by Gene -->
+                    <!-- Search by Gene -->
                     <section>
                         <h6>Search by Gene Symbol</h6>
                         <form action="/search_gene" method="POST" onsubmit="handleEmptyInput(event, 'search-gene', 'HOXA9')">
@@ -80,7 +80,7 @@
                     </section>
                     <div class="separator-line"></div>
 
-                    <!-- 🔍 Search by GSM -->
+                    <!-- Search by GSM -->
                     <section>
                         <h6>Search by GSM ID</h6>
                         <form action="/search_gsm" method="POST" onsubmit="handleEmptyInput(event, 'search-gsm', 'GSM8195762')">
@@ -90,7 +90,7 @@
                     </section>
                     <div class="separator-line"></div>
 
-                    <!-- 🔍 Search by Cell Type -->
+                    <!-- Search by Cell Type -->
                     <section>
                         <h6>Search by Cell Type</h6>
                         <form action="/search_celltype" method="POST" onsubmit="handleEmptyInput(event, 'search-celltype', 'HeLa')">
@@ -100,7 +100,7 @@
                     </section>
                     <div class="separator-line"></div>
 
-                    <!-- 🔍 Search by Union ID -->
+                    <!-- Search by Union ID -->
                     <section>
                         <h6>Search by Union ID</h6>
                         <form action="/search_union" method="POST" onsubmit="handleEmptyInput(event, 'search-union', '220000')">
@@ -111,13 +111,16 @@
                 </div>
             </nav>
 
-            <!-- 🔥 Main Content Area -->
+            <!-- Main Content Area -->
             <main role="main" id="main-content">
                 <div class="container my-5">
                     <h4 class="mb-4">
                         Union bindings within the searched loci:
                         <strong>{{ search_region.chr }}:{{ search_region.start }}-{{ search_region.end }}</strong>
                     </h4>
+                    <div class="separator-line"></div>
+
+                    <div id="igv-container" style="width: 100%; height: 520px;"></div>
                     <div class="separator-line"></div>
 
                     {% if results and results|length > 0 %}
@@ -146,9 +149,6 @@
                     {% else %}
                     <p class="text-danger">No CTCF binding sites found in the searched loci.</p>
                     {% endif %}
-
-                    <div class="separator-line"></div>
-                    <div id="igv-container" style="width: 100%; height: 500px;"></div>
                 </div>
             </main>
         </div>

@@ -127,7 +127,13 @@
             <!-- 🔥 Main Content Area -->
             <main role="main" id="main-content">
                 <div class="container my-5">
-                    <h4 class="mb-4">GSM Info: {{ gsm['GSM'] }}</h4>
+                    <h4 class="mb-4">{{ gsm['GSM'] }}</h4>
+
+                    <div class="section-divider"></div>
+                    <div id="igv-container"></div>
+                    <div class="section-divider"></div>
+
+                    <h4 class="mb-4">GSM Info</h4>
                     <div class="mb-4">
                         <table class="table table-bordered">
                             <thead>
@@ -176,9 +182,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="section-divider"></div>
-
-                    <div id="igv-container"></div>
                     <div class="section-divider"></div>
 
                     <h5 class="mt-4">Downloads</h5>
