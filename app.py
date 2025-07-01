@@ -539,8 +539,10 @@ def available_celltypes():
 
     # Query distinct cell types from the database
     cursor.execute("""
-        SELECT DISTINCT "Label"
-        FROM "CTCFLabels"
+        SELECT "Label" FROM (
+            SELECT DISTINCT "Label"
+            FROM "CTCFLabels"
+        ) AS sub
         ORDER BY LOWER("Label") ASC
     """)
     celltypes = [row[0] for row in cursor.fetchall()]
