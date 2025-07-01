@@ -267,11 +267,11 @@ def union_info(union_id):
         union_id=union_id,
         basic=[dict(row) for row in basic],
         celltype=[dict(row) for row in celltype],
-        sample=[dict(row) for row in sample]
+        sample=[dict(row) for row in sample],
+        results=[dict(row) for row in basic]
     )
 
 
-@app.route('/search_gene', methods=['POST'])
 @app.route('/search_gene', methods=['POST'])
 def search_gene():
     search_gene = request.form['gene'].strip()

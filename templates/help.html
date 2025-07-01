@@ -10,6 +10,22 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        h4 {
+            color: #063970;
+        }
+        .highlight {
+            font-weight: bold;
+        }
+        .section-spacing {
+            margin-top: 30px; /* Extra space between High-confidence and Constitutive sections */
+        }
+        .separator-line {
+            border-top: 2px solid #ddd;
+            margin: 10px 0;
+        }
+    </style>
   </head>
 
   <body class="bg-light">
@@ -17,75 +33,21 @@
 
     <div class="container my-5">
         <div class="py-3">
-          <img src="{{ url_for('static', filename='data/index_page.jpg') }}" alt="CTCF Image" width="800">
-        </div>
-        
-        <div class="">
-          <h4 class="mb-3">Search Function Descriptions</h4>
-          <ul style="list-style-type: none; padding-left: 0;">
-            <li><strong><img src="{{ url_for('static', filename='data/1.png') }}" alt="1 Index" width="30"> Search by Chromosomal Coordinate</strong> allows users to retrieve all CTCF union binding sites located within a specified genomic region. The results include a brief summary of each site. Clicking on a union site provides detailed information (see "Search by Union ID" for more information).</li>
-            <li>&nbsp;</li>
-            <li><strong><img src="{{ url_for('static', filename='data/2.png') }}" alt="2 Index" width="30"> Search by Gene Symbol</strong> allows users to retrieve all CTCF union binding sites located within the gene body of the specified gene, with a customizable window size upstream and downstream of the gene. The results are the same as those returned by the Chromosomal Coordinate search.</li>
-            <li>&nbsp;</li>
-            <li><strong><img src="{{ url_for('static', filename='data/3.png') }}" alt="3 Index" width="30"> Search by GSM ID</strong> allows users to visualize the CTCF binding profile (via bigWig) and download the corresponding narrowPeak peak calling results for the specified GSM dataset. Each result includes a brief dataset description and QC metrics.</li>
-            <li>&nbsp;</li>
-            <li><strong><img src="{{ url_for('static', filename='data/4.png') }}" alt="4 Index" width="30"> Search by Cell Type</strong> allows users to retrieve union site information specific to the selected cell type. The results include three summary tables:
-              <ul style="list-style-type: disc; padding-left: 1.5em;">
-                <li>GSM Datasets: All ChIP-seq datasets that use the searched cell type.</li>
-                <li>Gain Sites: Union sites where the cell type shows increased CTCF binding compared to other datasets.</li>
-                <li>Loss Sites: Union sites where the cell type shows decreased CTCF binding compared to other datasets.</li>
+          <h4 class="mt-4 highlight">Home Page Overview</h4>
+          <div class="separator-line"></div>
+          <img src="{{ url_for('static', filename='data/help_index.png') }}" alt="CTCF Image" width="1200">
 
-                <li style="margin-top: 1em;">Cell Type Gain/Loss: We identify cell type-specific union site changes by comparing occupancy frequencies and binding signals between cell type-specific datasets and a reference set of 2,097 datasets.</li>
-                <li>Loss Sites are defined by:</li>
-                  <ul>
-                    <li>Occupancy frequency ≤ 0.2 in the cell type datasets</li>
-                    <li>Occupancy frequency ≥ 0.7 in all 2,097 datasets</li>
-                    <li>Lower normalized CTCF signal in the cell type (statistic score < 0)</li>
-                    <li>Average RPKM < 5 in the cell type datasets</li>
-                  </ul>
-                <li>Gain Sites are defined by:</li>
-                  <ul>
-                    <li>Occupancy frequency ≥ 0.5 (with score ≥ 2) in the cell type datasets</li>
-                    <li>Occupancy frequency ≤ 0.2 in all 2,097 datasets</li>
-                    <li>Significantly higher CTCF signal in the cell type (FDR ≤ 0.01)</li>
-                    <li>Average RPKM > 2 in the cell type datasets</li>
-                  </ul>
-              </ul>
-            <li>&nbsp;</li>
-            <li><strong><img src="{{ url_for('static', filename='data/5.png') }}" alt="5 Index" width="30"> Search by Union ID</strong> allows users to directly access the detailed profile of any of the 531,851 high-confidence CTCF union binding sites. Each result includes three summary tables:</li>
-              <ul style="list-style-type: disc; padding-left: 1.5em;">
-                <li>Basic Information – general features of the union site</li>
-                <li>Cell Type Information – aggregated statistics across cell types</li>
-                <li>Sample Information – individual ChIP-seq dataset information</li>
-              </ul>
-            <li>&nbsp;</li>
-            <li><strong>Basic Information</strong></li>
-            <ul>
-              <li>Union ID: Each high-confidence union site is assigned a unique ID ranging from 1 to 531,851.</li>
-              <li>Loci: Genomic coordinates of the union site.</li>
-              <li>Motif: A list of all CTCF motifs that overlap with the union site.</li>
-              <li>Genomic Feature: Annotation of the site’s genomic context — promoter (±2 kb from gene TSS), exon, intron, or intergenic.</li>
-              <li>Occupancy Score: The number of ChIP-seq datasets in which a peak is found at the union site.</li>
-              <li>Occupancy Frequency: The ratio of the occupancy score to the total number of datasets (2,097).</li>
-              <li>Constitutive: Indicates whether the site is highly conserved across cell types, determined by a power-law model.</li>
-              <li>Cell Type Gain/Loss: We identify cell type-specific union site changes by comparing occupancy frequencies and binding signals</li>
-            </ul>
-            <li>&nbsp;</li>
-            <li><strong>Cell Type Information</strong></li>
-            <ul>
-              <li>Sample Size: Number of ChIP-seq datasets available for the cell type.</li>
-              <li>Occupancy Frequency: Fraction of cell type datasets with a peak at the site.</li>
-              <li>Average RPKM (Cell Type): Mean RPKM across all cell type datasets at the site.</li>
-              <li>Average RPKM (Others): Mean RPKM across all other datasets.</li>
-              <li>FDR: Statistical significance of RPKM differences, calculated using an unpaired two-tailed Student’s t-test with Benjamini-Hochberg correction.</li>
-            </ul>
-            <li>&nbsp;</li>
-            <li><strong>Sample Information</strong></li>
-            <ul>
-              <li>Occupancy: Indicates whether a peak was detected at the union site.</li>
-              <li>RPKM: Normalized binding signal at the site in that dataset.</li>
-            </ul>
-          </ul>
+          <h4 class="mt-4 highlight">Loci Search Results</h4>
+          <div class="separator-line"></div>
+          <img src="{{ url_for('static', filename='data/help_loci.png') }}" alt="CTCF Image" width="1200">
+
+          <h4 class="mt-4 highlight">Union Site Search Results</h4>
+          <div class="separator-line"></div>
+          <img src="{{ url_for('static', filename='data/help_union.png') }}" alt="CTCF Image" width="1200">
+
+          <h4 class="mt-4 highlight">Cell Type Search Results</h4>
+          <div class="separator-line"></div>
+          <img src="{{ url_for('static', filename='data/help_ct.png') }}" alt="CTCF Image" width="1200">
         </div>
     </div>
 
