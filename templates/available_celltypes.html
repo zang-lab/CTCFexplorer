@@ -18,8 +18,9 @@
             padding-left: 20px;
         }
         .celltype-container li {
-            flex: 0 0 calc(33.333% - 20px);
+            flex: 0 0 calc(25% - 20px);
             margin: 10px 10px;
+            font-size: 0.92rem;
         }
         .celltype-container li a {
             text-decoration: none;
@@ -40,25 +41,39 @@
     <div class="separator-line"></div>
     <div class="container my-5">
         <h4 class="mb-4">Available Cell Types in the Database</h4>
+        <h5 class="mt-4">Human Cell Types</h5>
         <hr>
         <ul class="celltype-container">
-            {% for celltype in celltypes %}
+            {% for celltype in human_celltypes %}
             <li>
-                <a href="{{ url_for('search_celltype') }}" onclick="event.preventDefault(); submitForm('{{ celltype }}');">{{ celltype }}</a>
+                <a href="{{ url_for('search_celltype') }}" onclick="event.preventDefault(); submitForm('human', '{{ celltype }}');">{{ celltype }}</a>
             </li>
             {% endfor %}
         </ul>
+
+        <h5 class="mt-4">Mouse Cell Types</h5>
+        <hr>
+        <ul class="celltype-container">
+            {% for celltype in mouse_celltypes %}
+            <li>
+                <a href="{{ url_for('search_celltype') }}" onclick="event.preventDefault(); submitForm('mouse', '{{ celltype }}');">{{ celltype }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+
         <div class="mt-4">
             <a href="/" class="btn btn-primary">Back to Home</a>
         </div>
     </div>
 
     <form id="redirect-form" action="{{ url_for('search_celltype') }}" method="POST" style="display: none;">
+        <input type="hidden" id="species-input" name="species" value="human">
         <input type="hidden" id="celltype-input" name="celltype">
     </form>
 
     <script>
-        function submitForm(celltype) {
+        function submitForm(species, celltype) {
+            document.getElementById('species-input').value = species;
             document.getElementById('celltype-input').value = celltype;
             document.getElementById('redirect-form').submit();
         }

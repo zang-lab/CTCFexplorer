@@ -72,7 +72,7 @@
 
                 <!-- GSM Information Section -->
                 <h4 class="section-header" id="gsm-info">GSMs using this cell type</h4>
-                <a href="{{ url_for('download_table', table_name='gsm_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download GSM Data</a>
+                <a href="{{ url_for('download_table', species=species, table_name='gsm_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download GSM Data</a>
                 <table id="gsm-table" class="table table-striped table-bordered mt-3">
                     <thead>
                         <tr>
@@ -88,6 +88,7 @@
                         <tr>
                             <td>
                               <form method="POST" action="{{ url_for('search_gsm') }}" style="display: inline;">
+                                <input type="hidden" name="species" value="{{ species }}">
                                 <input type="hidden" name="gsm" value="{{ row['GSM'] }}">
                                 <button type="submit" style="background: none; border: none; padding: 0; color: #007bff; text-decoration: underline; cursor: pointer;">
                                   {{ row['GSM'] }}
@@ -106,7 +107,7 @@
 
                 <!-- Union Bindings with Specific Gain -->
                 <h4 class="section-header" id="gain-info">Union bindings with specific gain</h4>
-                <a href="{{ url_for('download_table', table_name='gain_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download Gain Data</a>
+                <a href="{{ url_for('download_table', species=species, table_name='gain_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download Gain Data</a>
                 <table id="gain-table" class="table table-striped table-bordered mt-3">
                     <thead>
                         <tr>
@@ -123,7 +124,7 @@
                     <tbody>
                         {% for row in gain_results %}
                         <tr>
-                            <td><a href="{{ url_for('union_info', union_id=row['Union ID']) }}">{{ row['Union ID'] }}</a></td>
+                            <td><a href="{{ url_for('union_info', species=species, union_id=row['Union ID']) }}">{{ row['Union ID'] }}</a></td>
                             <td>{{ row['Loci'] }}</td>
                             <td>
                               {% set motif = row['Motif'] %}
@@ -135,7 +136,7 @@
                               {% set ct_gain = row['Cell type gain'] %}
                               {% if ct_gain and ct_gain != 'nan' and ct_gain != 'NaN' and ct_gain == ct_gain %}
                                 {% for celltype in (ct_gain|string).strip('"').split(' ') %}
-                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                  <a href="{{ url_for('search_celltype', species=species, celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
                                 {% endfor %}
                               {% endif %}
                             </td>
@@ -143,7 +144,7 @@
                               {% set ct_lost = row['Cell type lost'] %}
                               {% if ct_lost and ct_lost != 'nan' and ct_lost != 'NaN' and ct_lost == ct_lost %}
                                 {% for celltype in (ct_lost|string).strip('"').split(' ') %}
-                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                  <a href="{{ url_for('search_celltype', species=species, celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
                                 {% endfor %}
                               {% endif %}
                             </td>
@@ -158,7 +159,7 @@
 
                 <!-- Union Bindings with Specific Loss -->
                 <h4 class="section-header" id="loss-info">Union bindings with specific loss</h4>
-                <a href="{{ url_for('download_table', table_name='loss_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download Loss Data</a>
+                <a href="{{ url_for('download_table', species=species, table_name='loss_results', identifier=celltype) }}" class="btn btn-primary btn-sm mb-3">Download Loss Data</a>
                 <table id="loss-table" class="table table-striped table-bordered mt-3">
                     <thead>
                         <tr>
@@ -175,7 +176,7 @@
                     <tbody>
                         {% for row in loss_results %}
                         <tr>
-                            <td><a href="{{ url_for('union_info', union_id=row['Union ID']) }}">{{ row['Union ID'] }}</a></td>
+                            <td><a href="{{ url_for('union_info', species=species, union_id=row['Union ID']) }}">{{ row['Union ID'] }}</a></td>
                             <td>{{ row['Loci'] }}</td>
                             <td>
                               {% set motif = row['Motif'] %}
@@ -187,7 +188,7 @@
                               {% set ct_gain = row['Cell type gain'] %}
                               {% if ct_gain and ct_gain != 'nan' and ct_gain != 'NaN' and ct_gain == ct_gain %}
                                 {% for celltype in (ct_gain|string).strip('"').split(' ') %}
-                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                  <a href="{{ url_for('search_celltype', species=species, celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
                                 {% endfor %}
                               {% endif %}
                             </td>
@@ -195,7 +196,7 @@
                               {% set ct_lost = row['Cell type lost'] %}
                               {% if ct_lost and ct_lost != 'nan' and ct_lost != 'NaN' and ct_lost == ct_lost %}
                                 {% for celltype in (ct_lost|string).strip('"').split(' ') %}
-                                  <a href="{{ url_for('search_celltype', celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
+                                  <a href="{{ url_for('search_celltype', species=species, celltype=celltype) }}">{{ celltype }}</a>{% if not loop.last %}, {% endif %}
                                 {% endfor %}
                               {% endif %}
                             </td>

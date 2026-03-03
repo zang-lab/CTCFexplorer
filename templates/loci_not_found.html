@@ -56,6 +56,15 @@
             <!-- 🚀 Fixed Sidebar -->
             <nav id="sidebar">
                 <div class="sidebar-sticky p-3">
+                    <section>
+                        <h6>Select Species</h6>
+                        <select id="species-select" class="form-control mb-2">
+                            <option value="">-- Please select species --</option>
+                            <option value="human" {% if species == 'human' %}selected{% endif %}>Human</option>
+                            <option value="mouse" {% if species == 'mouse' %}selected{% endif %}>Mouse</option>
+                        </select>
+                    </section>
+                    <div class="separator-line"></div>
 
                     <!-- 🔍 Search by Loci -->
                     <section>
@@ -150,7 +159,7 @@
             console.log("Final IGV locus:", `${chr}:${start}-${end}`);
 
             const igvOptions = {
-                genome: "hg38",
+                genome: "{{ 'mm10' if species == 'mouse' else 'hg38' }}",
                 locus: `${chr}:${start}-${end}`,
                 tracks: [
                     {
@@ -160,13 +169,13 @@
                         sourceType: "inline",
                         visibilityWindow: 100000,
                         displayMode: "EXPANDED",
-                        color: "green",
+                        color: "rgb(82,111,88)",
                         features: [
                             {
                                 chr: chr,
                                 start: searchRegion.start,
                                 end: searchRegion.end,
-                                color: "green"
+                                color: "rgb(82,111,88)"
                             }
                         ]
                     },
@@ -175,7 +184,7 @@
                         type: "annotation",
                         format: "bed",
                         sourceType: "file",
-                        url: "{{ url_for('static', filename='data/high-confidence.bed') }}",
+                        url: "{{ url_for('static', filename='data/' + species + '/' + species + '_high_confidence.igv.bed') }}",
                         visibilityWindow: 100000,
                         displayMode: "EXPANDED"
                     },
@@ -184,7 +193,7 @@
                         type: "annotation",
                         format: "bed",
                         sourceType: "file",
-                        url: "{{ url_for('static', filename='data/constitutive.bed') }}",
+                        url: "{{ url_for('static', filename='data/' + species + '/' + species + '_constitutive.igv.bed') }}",
                         visibilityWindow: 100000,
                         displayMode: "EXPANDED"
                     },
@@ -193,14 +202,12 @@
                         type: "annotation",
                         format: "bed",
                         sourceType: "file",
-                        url: "{{ url_for('static', filename='data/motif.bed') }}",
+                        url: "{{ url_for('static', filename='data/' + species + '_motif.igv.bed') }}",
                         visibilityWindow: 100000,
-                        displayMode: "EXPANDED",  // Allows visualizing different motifs properly
-                        showFeatureName: false,  // Prevents motif sequences (e.g., "tggtct") from showing
-                        colorBy: "strand",  // Enable strand-based coloring
-                        getColor: function (feature) {
-                            return feature.strand === "-" ? "blue" : "green";  // Color - strand blue, + strand green
-                        },
+                        displayMode: "EXPANDED",
+                        showFeatureName: false,
+                        color: "#B67A7A",
+                        altColor: "#7D93A6",
                     }
                 ]
             };
@@ -216,11 +223,95 @@
     <script src="{{ url_for('static', filename='js/popper-1.14.3.min.js') }}"></script>
 
     <script>
+      function getSelectedSpecies() {
+        const selector = document.getElementById('species-select');
+        return selector ? selector.value : '';
+      }
+
+      function syncSpeciesToForms() {
+        const species = getSelectedSpecies();
+        const forms = document.querySelectorAll('form[action^="/search_"]');
+        forms.forEach(form => {
+          let hidden = form.querySelector('input[name="species"]');
+          if (!hidden) {
+            hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'species';
+            form.appendChild(hidden);
+          }
+          hidden.value = species;
+        });
+      }
+
+      function resolvedDefaultValue(inputId, defaultValue) {
+        const species = getSelectedSpecies();
+        const speciesDefaults = {
+          human: {
+            'search-loci': 'chr7:27150000-27170000',
+            'search-gene': 'HOXA9',
+            'search-gsm': 'GSM8195762',
+            'search-celltype': 'HeLa',
+            'search-union': '220000'
+          },
+          mouse: {
+            'search-loci': 'chr6:52218000-52238000',
+            'search-gene': 'Hoxa9',
+            'search-gsm': 'GSM4364238',
+            'search-celltype': 'mESC',
+            'search-union': '102783'
+          }
+        };
+        return (speciesDefaults[species] && speciesDefaults[species][inputId]) || defaultValue;
+      }
+
+      function updateSearchExamples() {
+        const species = getSelectedSpecies();
+        if (!species) return;
+        const defaults = {
+          human: {
+            'search-loci': 'chr7:27150000-27170000',
+            'search-gene': 'HOXA9',
+            'search-gsm': 'GSM8195762',
+            'search-celltype': 'HeLa',
+            'search-union': '220000',
+            'extension-window': '5000'
+          },
+          mouse: {
+            'search-loci': 'chr6:52218000-52238000',
+            'search-gene': 'Hoxa9',
+            'search-gsm': 'GSM4364238',
+            'search-celltype': 'mESC',
+            'search-union': '102783',
+            'extension-window': '5000'
+          }
+        };
+        const selected = defaults[species];
+        const placeholderMap = {
+          'search-loci': `e.g., ${selected['search-loci']}`,
+          'search-gene': `e.g., ${selected['search-gene']}`,
+          'search-gsm': `e.g., ${selected['search-gsm']}`,
+          'search-celltype': `e.g., ${selected['search-celltype']}`,
+          'search-union': `e.g., ${selected['search-union']}`,
+          'extension-window': `e.g., ${selected['extension-window']}`
+        };
+        Object.keys(placeholderMap).forEach((id) => {
+          const node = document.getElementById(id);
+          if (node) node.placeholder = placeholderMap[id];
+        });
+      }
+
       function handleEmptyInput(event, inputId, defaultValue) {
+        const species = getSelectedSpecies();
+        if (!species) {
+          event.preventDefault();
+          alert('Please select species first.');
+          return;
+        }
         const inputElement = document.getElementById(inputId);
         if (!inputElement.value.trim()) {
           event.preventDefault(); // Prevent form submission
-          inputElement.value = defaultValue; // Set the default value
+          inputElement.value = resolvedDefaultValue(inputId, defaultValue); // Set species-aware default
+          syncSpeciesToForms();
           event.target.submit(); // Resubmit the form with the default value
         }
       }
@@ -228,6 +319,15 @@
 
     <script>
       window.onload = function () {
+        const speciesSelect = document.getElementById('species-select');
+        if (speciesSelect) {
+          speciesSelect.addEventListener('change', function () {
+            syncSpeciesToForms();
+            updateSearchExamples();
+          });
+        }
+        syncSpeciesToForms();
+        updateSearchExamples();
         const searchInputs = document.querySelectorAll('.search-input');
         searchInputs.forEach(input => input.value = '');
       };

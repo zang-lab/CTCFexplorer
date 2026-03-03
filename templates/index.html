@@ -31,14 +31,26 @@
       <div class="py-3">
         <!-- Project Introduction -->
         <p>
-          CTCFexplorer is a curated data resource encompassing 2,097 high-quality CTCF ChIP-seq datasets from NCBI GEO across 397 human cell types. We identified 531,851 high-confidence CTCF binding sites in the human genome. Among those, 24,614 sites were characterized as constitutive binding sites conserved across cell types. With its systematic approach and user-friendly interface, CTCFexplorer provides an invaluable resource for advancing research in 3D genomics and gene regulation. This framework can be extended to generate similar data resources for other DNA-binding proteins, facilitating broader insights into functional genomics and cancer research.
+          CTCFexplorer is a curated data resource encompassing 2,097 high-quality human CTCF ChIP-seq datasets from NCBI GEO across 359 human cell types, and 1,345 high-quality mouse CTCF ChIP-seq datasets across 285 mouse cell types. We identified 531,851 high-confidence and 24,614 constitutive CTCF binding sites in human, and 297,825 high-confidence and 14,925 constitutive CTCF binding sites in mouse. With its systematic approach and user-friendly interface, CTCFexplorer provides an invaluable resource for advancing research in 3D genomics and gene regulation across both species.
         </p>
         <p>
-          CTCFexplorer is implemented in Python and developed by the <a href="https://zanglab.github.io/index.html" target="_blank">Chongzhi Zang Lab</a> at the University of Virginia.
+          CTCFexplorer is implemented in Python and SQL and developed by the <a href="https://zanglab.github.io/index.html" target="_blank">Chongzhi Zang Lab</a> at the University of Virginia.
         </p>
 
         <!-- Divider for visual separation -->
         <hr class="divider">
+
+        <!-- Species Selection Section -->
+        <section>
+          <h4>Select Species</h4>
+          <select id="species-select" class="form-control" style="max-width: 260px;">
+            <option value="">-- Please select species --</option>
+            <option value="human" {% if species == 'human' %}selected{% endif %}>Human</option>
+            <option value="mouse" {% if species == 'mouse' %}selected{% endif %}>Mouse</option>
+          </select>
+          <small class="text-muted">You must select species before using search.</small>
+        </section>
+        <div class="separator-line"></div>
 
         <!-- Search by Loci Section -->
         <section>
@@ -114,11 +126,95 @@
 
     <!-- Custom JavaScript -->
     <script>
+      function getSelectedSpecies() {
+        const selector = document.getElementById('species-select');
+        return selector ? selector.value : '';
+      }
+
+      function syncSpeciesToForms() {
+        const species = getSelectedSpecies();
+        const forms = document.querySelectorAll('form[action^="/search_"]');
+        forms.forEach(form => {
+          let hidden = form.querySelector('input[name="species"]');
+          if (!hidden) {
+            hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'species';
+            form.appendChild(hidden);
+          }
+          hidden.value = species;
+        });
+      }
+
+      function resolvedDefaultValue(inputId, defaultValue) {
+        const species = getSelectedSpecies();
+        const speciesDefaults = {
+          human: {
+            'search-loci': 'chr7:27150000-27170000',
+            'search-gene': 'HOXA9',
+            'search-gsm': 'GSM8195762',
+            'search-celltype': 'HeLa',
+            'search-union': '220000'
+          },
+          mouse: {
+            'search-loci': 'chr6:52218000-52238000',
+            'search-gene': 'Hoxa9',
+            'search-gsm': 'GSM4364238',
+            'search-celltype': 'mESC',
+            'search-union': '102783'
+          }
+        };
+        return (speciesDefaults[species] && speciesDefaults[species][inputId]) || defaultValue;
+      }
+
+      function updateSearchExamples() {
+        const species = getSelectedSpecies();
+        if (!species) return;
+        const defaults = {
+          human: {
+            'search-loci': 'chr7:27150000-27170000',
+            'search-gene': 'HOXA9',
+            'search-gsm': 'GSM8195762',
+            'search-celltype': 'HeLa',
+            'search-union': '220000',
+            'extension-window': '5000'
+          },
+          mouse: {
+            'search-loci': 'chr6:52218000-52238000',
+            'search-gene': 'Hoxa9',
+            'search-gsm': 'GSM4364238',
+            'search-celltype': 'mESC',
+            'search-union': '102783',
+            'extension-window': '5000'
+          }
+        };
+        const selected = defaults[species];
+        const placeholderMap = {
+          'search-loci': `e.g., ${selected['search-loci']}`,
+          'search-gene': `e.g., ${selected['search-gene']}`,
+          'search-gsm': `e.g., ${selected['search-gsm']}`,
+          'search-celltype': `e.g., ${selected['search-celltype']}`,
+          'search-union': `e.g., ${selected['search-union']}`,
+          'extension-window': `e.g., ${selected['extension-window']}`
+        };
+        Object.keys(placeholderMap).forEach((id) => {
+          const node = document.getElementById(id);
+          if (node) node.placeholder = placeholderMap[id];
+        });
+      }
+
       function handleEmptyInput(event, inputId, defaultValue) {
+        const species = getSelectedSpecies();
+        if (!species) {
+          event.preventDefault();
+          alert('Please select species first.');
+          return;
+        }
         const inputElement = document.getElementById(inputId);
         if (!inputElement.value.trim()) {
           event.preventDefault(); // Prevent form submission
-          inputElement.value = defaultValue; // Set the default value
+          inputElement.value = resolvedDefaultValue(inputId, defaultValue); // Set species-aware default
+          syncSpeciesToForms();
           event.target.submit(); // Resubmit the form with the default value
         }
       }
@@ -126,6 +222,15 @@
 
     <script>
       window.onload = function () {
+        const speciesSelect = document.getElementById('species-select');
+        if (speciesSelect) {
+          speciesSelect.addEventListener('change', function () {
+            syncSpeciesToForms();
+            updateSearchExamples();
+          });
+        }
+        syncSpeciesToForms();
+        updateSearchExamples();
         const searchInputs = document.querySelectorAll('.search-input');
         searchInputs.forEach(input => input.value = '');
       };
