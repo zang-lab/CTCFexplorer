@@ -211,9 +211,39 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const igvContainer = document.getElementById('igv-container');
+            const narrowPeakUrl = "{{ url_for('static', filename='data/narrowPeak/' + gsm['GSM'] + '.narrowPeak') }}";
+            const defaultLocus = "{{ 'chr6:52218000-52238000' if species == 'mouse' else 'chr7:27150000-27170000' }}";
+
+            async function inferLocusFromNarrowPeak(url, fallback) {
+                try {
+                    const response = await fetch(url, { cache: "no-store" });
+                    if (!response.ok) return fallback;
+                    const text = await response.text();
+                    const firstDataLine = text
+                        .split(/\r?\n/)
+                        .find(line => line && !line.startsWith("#"));
+                    if (!firstDataLine) return fallback;
+
+                    const fields = firstDataLine.split("\t");
+                    if (fields.length < 3) return fallback;
+
+                    const chr = fields[0];
+                    const start = Number.parseInt(fields[1], 10);
+                    const end = Number.parseInt(fields[2], 10);
+                    if (!chr || Number.isNaN(start) || Number.isNaN(end)) return fallback;
+
+                    const flank = 2000;
+                    const searchStart = Math.max(1, start - flank);
+                    const searchEnd = end + flank;
+                    return `${chr}:${searchStart}-${searchEnd}`;
+                } catch (error) {
+                    return fallback;
+                }
+            }
+
             const igvOptions = {
                 genome: "{{ 'mm10' if species == 'mouse' else 'hg38' }}",
-                locus: "chr1:1-1000000",
+                locus: defaultLocus,
                 tracks: [
                     {
                         name: "{{ gsm['GSM'] }} BigWig",
@@ -227,7 +257,7 @@
                         name: "{{ gsm['GSM'] }} NarrowPeak",
                         type: "annotation",
                         format: "bed",
-                        url: "{{ url_for('static', filename='data/narrowPeak/' + gsm['GSM'] + '.narrowPeak') }}",
+                        url: narrowPeakUrl,
                         visibilityWindow: 1000000,
                         displayMode: "EXPANDED"
                     },
@@ -261,7 +291,11 @@
                 ]
             };
 
-            igv.createBrowser(igvContainer, igvOptions).then(() => {
+            igv.createBrowser(igvContainer, igvOptions).then(async (browser) => {
+                const sampleLocus = await inferLocusFromNarrowPeak(narrowPeakUrl, defaultLocus);
+                if (sampleLocus) {
+                    await browser.search(sampleLocus);
+                }
                 console.log("Genome browser initialized for GSM: {{ gsm['GSM'] }}");
             });
         });
