@@ -186,6 +186,7 @@ def search_loci():
         conn.close()
 
     results = [dict(row) for row in rows if overlaps_region(row.get("Loci"), search_chr, search_start, search_end)]
+    results.sort(key=lambda row: int(row.get("union_id")) if str(row.get("union_id", "")).isdigit() else float("inf"))
     search_region = {"chr": search_chr, "start": search_start, "end": search_end}
     if not results:
         return render_template(
