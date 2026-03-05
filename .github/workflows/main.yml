@@ -6,7 +6,7 @@ on:
       - 'develop'
       - 'main'
     tags:
-      - 'prod-*.*'
+      - 'prod-*'
   workflow_dispatch:
 
 permissions:
