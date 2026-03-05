@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, Response, abort, send_file, redirect, url_for
 from io import StringIO
 import csv
-import getpass
 import os
 import re
 from pathlib import Path
@@ -67,25 +66,12 @@ app = Flask(__name__, template_folder=str(TEMPLATES_DIR), static_folder=str(STAT
 
 
 def get_db_connection():
-    # Prefer explicit app env vars; otherwise fall back to standard PG* vars and local OS user.
-    dbname = os.environ.get("DB_NAME") or os.environ.get("PGDATABASE") or "ctcfexplorer2026"
-    user = os.environ.get("DB_USER") or os.environ.get("PGUSER") or getpass.getuser()
-    password = os.environ.get("DB_PASSWORD") or os.environ.get("PGPASSWORD") or ""
-    host = os.environ.get("DB_HOST") or os.environ.get("PGHOST")
-    port = os.environ.get("DB_PORT") or os.environ.get("PGPORT")
-
-    conn_kwargs = {
-        "dbname": dbname,
-        "user": user,
-        "password": password,
-    }
-    if host:
-        conn_kwargs["host"] = host
-    if port:
-        conn_kwargs["port"] = port
-
     conn = psycopg2.connect(
-        **conn_kwargs,
+        dbname=os.environ.get("DB_NAME", "CTCFDB_PostgreSQL"),
+        user=os.environ.get("DB_USER", "postgres"),
+        password=os.environ.get("DB_PASSWORD", ""),
+        host=os.environ.get("DB_HOST", "localhost"),
+        port=os.environ.get("DB_PORT", 5432),
     )
     conn.autocommit = True
     return conn
