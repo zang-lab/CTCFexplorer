@@ -195,7 +195,7 @@ def search_loci():
             search_region=search_region,
             error=f"No union binding site found for {loci_input}.",
         )
-    return render_template("results_loci.html", species=species, results=results, search_region=search_region, query=loci_input)
+    return render_template("results_Loci.html", species=species, results=results, search_region=search_region, query=loci_input)
 
 
 @app.route("/search_union", methods=["POST"])
@@ -332,7 +332,7 @@ def search_celltype():
         return render_template("celltype_not_found.html", species=species, celltype=celltype)
 
     return render_template(
-        "results_celltype.html",
+        "results_Celltype.html",
         species=species,
         celltype=normalized_celltype,
         gsm_results=[dict(row) for row in gsm_rows],
@@ -428,7 +428,7 @@ def search_gene():
             results = [dict(row) for row in rows if overlaps_region(row.get("Loci"), search_chr, search_start, search_end)]
 
             return render_template(
-                "results_gene.html",
+                "results_Gene.html",
                 species=species,
                 search_gene=gene,
                 results=results,
@@ -464,7 +464,7 @@ def search_gene():
     else:
         search_region = {"chr": "chr1", "start": 1, "end": 10000}
     return render_template(
-        "results_gene.html",
+        "results_Gene.html",
         species=species,
         search_gene=gene,
         results=results,
@@ -623,4 +623,3 @@ def download_page():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=os.environ.get("FLASK_ENV") == "development")
-
