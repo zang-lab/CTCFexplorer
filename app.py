@@ -61,6 +61,7 @@ LABEL_TABLES = {
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = Path(os.environ.get("TEMPLATES_DIR", str(BASE_DIR / "templates")))
 STATIC_DIR = Path(os.environ.get("STATIC_DIR", str(BASE_DIR / "static")))
+PG_DUMPS_DIR = Path(os.environ.get("PG_DUMPS_DIR", str(BASE_DIR / "pg_dumps")))
 
 app = Flask(__name__, template_folder=str(TEMPLATES_DIR), static_folder=str(STATIC_DIR))
 
@@ -556,6 +557,16 @@ def download_file(folder, filename):
     if not os.path.exists(file_path):
         abort(404, description=f"File {filename} not found in {folder}.")
     return send_file(file_path, as_attachment=True, download_name=filename)
+
+
+@app.route("/genome_file/<filename>")
+def genome_file(filename):
+    if filename not in {"hg38.fa", "hg38.fa.fai", "mm10.fa", "mm10.fa.fai"}:
+        abort(404, description="Genome file not found.")
+    file_path = PG_DUMPS_DIR / filename
+    if not file_path.exists():
+        abort(404, description=f"Genome file not found: {filename}")
+    return send_file(file_path, as_attachment=False, download_name=filename)
 
 
 @app.route("/available_celltypes")
