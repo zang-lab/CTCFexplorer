@@ -569,6 +569,20 @@ def genome_file(filename):
     return send_file(file_path, as_attachment=False, download_name=filename)
 
 
+@app.route("/annotation_file/<filename>")
+def annotation_file(filename):
+    allowed = {
+        "hg38.refGene.transcripts.bed",
+        "mm10.ncbiRefSeq.transcripts.bed",
+    }
+    if filename not in allowed:
+        abort(404, description="Annotation file not found.")
+    file_path = PG_DUMPS_DIR / filename
+    if not file_path.exists():
+        abort(404, description=f"Annotation file not found: {filename}")
+    return send_file(file_path, as_attachment=False, conditional=True)
+
+
 @app.route("/available_celltypes")
 def available_celltypes():
     # Keep supporting species query parameter for backward compatibility,

@@ -293,6 +293,15 @@
                         showFeatureName: false,
                         color: "#B67A7A",
                         altColor: "#7D93A6",
+                    },
+                    {
+                        name: "RefSeq Genes",
+                        type: "annotation",
+                        format: "bed",
+                        sourceType: "file",
+                        url: "{{ url_for('annotation_file', filename=('mm10.ncbiRefSeq.transcripts.bed' if species == 'mouse' else 'hg38.refGene.transcripts.bed')) }}",
+                        visibilityWindow: 1000000,
+                        displayMode: "EXPANDED"
                     }
                 ]
             };
