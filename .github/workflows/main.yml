@@ -1,9 +1,6 @@
 name: Docker Build CI
 
 on:
-  create:
-    tags:
-      - 'prod-*'
   push:
     branches:
       - 'develop'
