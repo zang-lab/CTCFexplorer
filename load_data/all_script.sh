@@ -8,15 +8,16 @@ set -euo pipefail
 : "${DB_USER:?DB_USER is not set}"
 : "${DB_PASSWORD:?DB_PASSWORD is not set}"
 : "${LOGFILE:?LOGFILE is not set}"
+: "${DB_DUMP_DIR:?DB_DUMP_DIR is not set}"
 # ────────────────────────────────────────────────────────
 
-export DB_HOST DB_PORT DB_NAME DB_USER DB_PASSWORD LOGFILE
+export DB_HOST DB_PORT DB_NAME DB_USER DB_PASSWORD LOGFILE DB_DUMP_DIR
 
 echo "Using DB_HOST: $DB_HOST"
 echo "Connecting as user: $DB_USER to database: $DB_NAME on port: $DB_PORT"
 
-DUMP_DIR=/app/pg_dumps
-SCHEMA_SQL=/app/schema.sql
+DUMP_DIR=$DB_DUMP_DIR
+SCHEMA_SQL=${DB_SCHEMA_SQL:-/app/schema.sql}
 
 # Check schema file exists
 if [[ ! -f "$SCHEMA_SQL" ]]; then

@@ -84,9 +84,6 @@ volumes:
   - name: ctcf-genome
     persistentVolumeClaim:
       claimName: ctcf-genome-pvc
-#  - name: ctcf-pg-dumps
-#    persistentVolumeClaim:
-#      claimName: ctcf-pg-dumps-pvc
   - name: ctcf-schema
     persistentVolumeClaim:
       claimName: ctcf-schema-pvc
@@ -98,8 +95,6 @@ volumeMounts:
     mountPath: /app/static/data/narrowPeak
   - name: ctcf-genome
     mountPath: /app/static/data/genome
-#  - name: ctcf-pg-dumps
-#    mountPath: /app/pg_dumps
   - name: ctcf-schema
     mountPath: /app/schema.sql
     subPath: schema.sql

@@ -37,8 +37,8 @@ if ! pg_ctl -D "$PGDATA" status >/dev/null 2>&1; then
 fi
 # ───────────────────────────────────────────────────────────────────────
 
-DUMP_DIR=/project/zanglab_project/vdj6tq/project_data/CTCFexplorer/hs/pg_dumps
-SCHEMA_SQL=/project/zanglab_project/vdj6tq/project_data/CTCFexplorer/hs/schema.sql
+DUMP_DIR=${DB_DUMP_DIR:?DB_DUMP_DIR is not set}
+SCHEMA_SQL=${DB_SCHEMA_SQL:?DB_SCHEMA_SQL is not set}
 NUM_DUMPS=$(ls -1 "$DUMP_DIR"/dump_*.sql 2>/dev/null | wc -l)
 
 if [[ $NUM_DUMPS -eq 0 ]]; then

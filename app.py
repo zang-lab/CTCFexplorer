@@ -61,7 +61,7 @@ LABEL_TABLES = {
 BASE_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = Path(os.environ.get("TEMPLATES_DIR", str(BASE_DIR / "templates")))
 STATIC_DIR = Path(os.environ.get("STATIC_DIR", str(BASE_DIR / "static")))
-PG_DUMPS_DIR = Path(os.environ.get("PG_DUMPS_DIR", str(BASE_DIR / "pg_dumps")))
+GENOME_DIR = Path(os.environ.get("GENOME_DIR", str(STATIC_DIR / "data" / "genome")))
 
 app = Flask(__name__, template_folder=str(TEMPLATES_DIR), static_folder=str(STATIC_DIR))
 
@@ -563,7 +563,7 @@ def download_file(folder, filename):
 def genome_file(filename):
     if filename not in {"hg38.fa", "hg38.fa.fai", "mm10.fa", "mm10.fa.fai"}:
         abort(404, description="Genome file not found.")
-    file_path = PG_DUMPS_DIR / filename
+    file_path = GENOME_DIR / filename
     if not file_path.exists():
         abort(404, description=f"Genome file not found: {filename}")
     return send_file(file_path, as_attachment=False, download_name=filename)
@@ -577,7 +577,7 @@ def annotation_file(filename):
     }
     if filename not in allowed:
         abort(404, description="Annotation file not found.")
-    file_path = PG_DUMPS_DIR / filename
+    file_path = GENOME_DIR / filename
     if not file_path.exists():
         abort(404, description=f"Annotation file not found: {filename}")
     return send_file(file_path, as_attachment=False, conditional=True)
