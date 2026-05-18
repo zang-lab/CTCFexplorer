@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  python-checks:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ctcfexplorer_ci
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ctcfexplorer_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_NAME: ctcfexplorer_ci
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Python tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest ruff
+      - name: Compile Python sources
+        run: python -m compileall app.py load_data pipeline nextflow/bin tests
+      - name: Ruff lint
+        run: ruff check .
+      - name: Run Flask and database tests
+        run: pytest -q tests/test_app.py tests/test_database_queries.py
+
+  docker-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t ctcfexplorer:test -f docker/Dockerfile .
+      - name: Start container
+        run: |
+          docker run -d --name ctcfexplorer-smoke -p 5000:5000 ctcfexplorer:test
+          for i in $(seq 1 20); do
+            curl -fsS http://127.0.0.1:5000/ && exit 0
+            sleep 2
+          done
+          docker logs ctcfexplorer-smoke
+          exit 1
+      - name: Stop container
+        if: always()
+        run: docker rm -f ctcfexplorer-smoke || true
+
+  nextflow-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Nextflow
+        run: |
+          curl -s https://get.nextflow.io | bash
+          sudo mv nextflow /usr/local/bin/nextflow
+      - name: Stub-run pipeline
+        run: |
+          nextflow run nextflow/main.nf \
+            -profile local \
+            -stub-run \
+            --srr_list tests/data/srr_list.txt \
+            --bowtie2_index dummy_index \
+            --blacklist_bed dummy_blacklist.bed \
+            --outdir test-results/nextflow
+      - name: Validate stub outputs
+        run: python tests/validate_outputs.py test-results/nextflow
+
+  helm-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+      - name: Helm lint
+        run: helm lint kubernetes/ctcfexplorer
+      - name: Helm template
+        run: helm template ctcfexplorer kubernetes/ctcfexplorer > /tmp/ctcfexplorer-rendered.yaml
