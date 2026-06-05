@@ -200,7 +200,6 @@
             // Configure IGV.js
             const igvOptions = {
                 reference: {
-                    id: "{{ 'mm10' if species == 'mouse' else 'hg38' }}",
                     name: "{{ 'Mouse mm10' if species == 'mouse' else 'Human hg38' }}",
                     fastaURL: "{{ url_for('genome_file', filename=('mm10.fa' if species == 'mouse' else 'hg38.fa')) }}",
                     indexURL: "{{ url_for('genome_file', filename=('mm10.fa.fai' if species == 'mouse' else 'hg38.fa.fai')) }}"
@@ -250,9 +249,14 @@
             };
 
             // Initialize IGV.js
-            igv.createBrowser(igvContainer, igvOptions).then(() => {
-                console.log("Genome browser initialized for region:", searchRegion);
-            });
+            igv.createBrowser(igvContainer, igvOptions)
+                .then(() => {
+                    console.log("Genome browser initialized for region:", searchRegion);
+                })
+                .catch((err) => {
+                    console.error("IGV failed to initialize:", err);
+                    igvContainer.innerHTML = `<div style="padding:16px;color:#b00020;">IGV failed to load: ${err?.message || err}</div>`;
+                });
         });
     </script>
 
