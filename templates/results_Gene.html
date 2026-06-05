@@ -199,6 +199,7 @@
 
             // Configure IGV.js
             const igvOptions = {
+                loadDefaultGenomes: false,
                 reference: {
                     name: "{{ 'Mouse mm10' if species == 'mouse' else 'Human hg38' }}",
                     fastaURL: "{{ url_for('genome_file', filename=('mm10.fa' if species == 'mouse' else 'hg38.fa')) }}",
