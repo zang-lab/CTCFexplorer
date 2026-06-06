@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-import os, psycopg2
+import os
+
+import psycopg2
 
 # ── pick up TCP details from the environment ───────────────────────────
 DB_HOST     = os.environ["DB_HOST"]

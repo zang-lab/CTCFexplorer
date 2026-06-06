@@ -7,8 +7,6 @@ on:
       - 'main'
     tags:
       - 'prod-*'
-  release:
-    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -19,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -33,7 +31,6 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/prod-')
         run: |
           TAG_NAME="${GITHUB_REF#refs/tags/}"
-           yq eval ".image.tag = \"${TAG_NAME}\"" -i kubernetes/ctcfexplorer/values.yaml
           echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
 
       - name: Login to GHCR
@@ -77,13 +74,18 @@ jobs:
           tags: |
             ${{ env.GHCR_REPO }}:${{ env.TAG_NAME }}
 
-      - name: Push Prod Version to main branch
+      - name: Update Helm tag on main branch
         if: startsWith(github.ref, 'refs/tags/prod-')
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "[skip ci] Update Version to Helm - ${{ env.TAG_NAME }}"
-          branch: main
-          file_pattern: 'kubernetes/ctcfexplorer/values.yaml'
-          commit_user_name: GitHub Actions Bot
-          commit_user_email: github@virginia.edu
-          commit_author: GitHub Actions <github@virginia.edu>
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          yq eval ".image.tag = \"${TAG_NAME}\"" -i kubernetes/ctcfexplorer/values.yaml
+          if git diff --quiet -- kubernetes/ctcfexplorer/values.yaml; then
+            echo "Helm tag already up to date"
+            exit 0
+          fi
+          git config user.name "GitHub Actions Bot"
+          git config user.email "github@virginia.edu"
+          git add kubernetes/ctcfexplorer/values.yaml
+          git commit -m "[skip ci] Update Version to Helm - ${TAG_NAME}"
+          git push origin HEAD:main

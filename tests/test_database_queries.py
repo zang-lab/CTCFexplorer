@@ -3,7 +3,6 @@ from pathlib import Path
 
 import psycopg2
 import pytest
-
 from conftest import load_app_module
 
 TEST_DB_REQUIRED = all(

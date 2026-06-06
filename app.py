@@ -1,14 +1,13 @@
-from flask import Flask, render_template, request, Response, abort, send_file, redirect, url_for
-from io import StringIO
 import csv
 import os
 import re
+from io import StringIO
 from pathlib import Path
 
 import psycopg2
 import psycopg2.extras
+from flask import Flask, Response, abort, redirect, render_template, request, send_file, url_for
 from psycopg2 import sql
-
 
 VALID_SPECIES = {"human", "mouse"}
 MAX_UNION_ID_BY_SPECIES = {"human": 531851, "mouse": 297825}

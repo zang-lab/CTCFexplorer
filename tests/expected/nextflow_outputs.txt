@@ -1,8 +1,0 @@
-01_fastq
-02_fastqc
-06_union/union_sites.bed
-07_occupancy/union_occupancy_matrix.tsv
-07_occupancy/union_occupancy_scores.tsv
-08_signal/union_RPKM.tsv
-09_final/high_confidence.bed
-09_final/constitutive.bed

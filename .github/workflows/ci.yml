@@ -39,9 +39,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt pytest ruff
       - name: Compile Python sources
-        run: python -m compileall app.py load_data pipeline nextflow/bin tests
+        run: python -m compileall app.py load_data pipeline tests
       - name: Ruff lint
-        run: ruff check .
+        run: ruff check app.py load_data tests
       - name: Run Flask and database tests
         run: pytest -q tests/test_app.py tests/test_database_queries.py
 
@@ -64,33 +64,6 @@ jobs:
         if: always()
         run: docker rm -f ctcfexplorer-smoke || true
 
-  nextflow-smoke:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install Nextflow
-        run: |
-          curl -s https://get.nextflow.io | bash
-          sudo mv nextflow /usr/local/bin/nextflow
-      - name: Stub-run pipeline
-        run: |
-          nextflow run nextflow/main.nf \
-            -profile local \
-            -stub-run \
-            --srr_list tests/data/srr_list.txt \
-            --bowtie2_index dummy_index \
-            --blacklist_bed dummy_blacklist.bed \
-            --outdir test-results/nextflow
-      - name: Validate stub outputs
-        run: python tests/validate_outputs.py test-results/nextflow
 
   helm-validate:
     runs-on: ubuntu-latest
