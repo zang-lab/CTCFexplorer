@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <title>Available Cell Types</title>
+    <title>Available Biosamples</title>
     <style>
         .celltype-container {
             display: flex;
@@ -40,8 +40,8 @@
 
     <div class="separator-line"></div>
     <div class="container my-5">
-        <h4 class="mb-4">Available Cell Types in the Database</h4>
-        <h5 class="mt-4">Human Cell Types</h5>
+        <h4 class="mb-4">Available Biosamples in the Database</h4>
+        <h5 class="mt-4">Human Biosamples</h5>
         <hr>
         <ul class="celltype-container">
             {% for celltype in human_celltypes %}
@@ -51,7 +51,7 @@
             {% endfor %}
         </ul>
 
-        <h5 class="mt-4">Mouse Cell Types</h5>
+        <h5 class="mt-4">Mouse Biosamples</h5>
         <hr>
         <ul class="celltype-container">
             {% for celltype in mouse_celltypes %}

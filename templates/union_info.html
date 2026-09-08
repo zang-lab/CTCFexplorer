@@ -62,7 +62,7 @@
                         <a class="nav-link" href="#basic-info">Basic Info</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#celltype-info">Cell Type Info</a>
+                        <a class="nav-link" href="#celltype-info">Biosample Info</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#sample-info">Sample Info</a>
@@ -89,8 +89,8 @@
                             <th title="Genomic location of the binding site">Loci</th>
                             <th title="Genomic location(s) of motif(s) overlapping with this binding site">Motif</th>
                             <th title="Genomic feature associated with this binding site">Genomic Feature</th>
-                            <th title="Cell type(s) showing increased binding at this site">Cell Type Gain</th>
-                            <th title="Cell type(s) showing decreased binding at this site">Cell Type Lost</th>
+                            <th title="Biosample(s) showing increased binding at this site">Biosample Gain</th>
+                            <th title="Biosample(s) showing decreased binding at this site">Biosample Lost</th>
                             <th title="Whether the binding is constitutive">Constitutive</th>
                             <th title="Number of samples with this binding site">Occupancy Score</th>
                             <th title="Percentage of samples with this binding site">Occupancy Frequency</th>
@@ -131,19 +131,19 @@
                     </tbody>
                 </table>
 
-                <!-- Cell Type Info Section -->
+                <!-- Biosample Info Section -->
                 <div class="separator-line"></div>
-                <h4 class="section-header" id="celltype-info">Cell Type Info</h4>
-                <a href="{{ url_for('download_table', species=species, table_name='celltype_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Cell Type Info</a>
+                <h4 class="section-header" id="celltype-info">Biosample Info</h4>
+                <a href="{{ url_for('download_table', species=species, table_name='celltype_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Biosample Info</a>
                 <table id="celltype-table" class="table table-striped table-bordered mt-3">
                     <thead>
                         <tr>
-                            <th title="Name of the cell type">Cell Type</th>
-                            <th title="Number of samples for this cell type">Sample Size</th>
-                            <th title="Proportion of datasets with binding at this site for the cell type">Cell Type Occupancy Frequency</th>
-                            <th title="Average RPKM value for this cell type at the binding site">Avg RPKM (Cell Type)</th>
-                            <th title="Average RPKM value for other cell types at the binding site">Avg RPKM (Others)</th>
-                            <th title="Significance of binding difference between this cell type and others">FDR</th>
+                            <th title="Name of the biosample">Biosample</th>
+                            <th title="Number of samples for this biosample">Sample Size</th>
+                            <th title="Proportion of datasets with binding at this site for the biosample">Biosample Occupancy Frequency</th>
+                            <th title="Average RPKM value for this biosample at the binding site">Avg RPKM (Biosample)</th>
+                            <th title="Average RPKM value for other biosamples at the binding site">Avg RPKM (Others)</th>
+                            <th title="Significance of binding difference between this biosample and others">FDR</th>
                         </tr>
                     </thead>
                     <tbody>

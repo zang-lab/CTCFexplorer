@@ -31,7 +31,7 @@
       <div class="py-3">
         <!-- Project Introduction -->
         <p>
-          CTCFexplorer is a curated data resource encompassing 2,097 high-quality human CTCF ChIP-seq datasets from NCBI GEO across 359 human cell types, and 1,345 high-quality mouse CTCF ChIP-seq datasets across 285 mouse cell types. We identified 531,851 high-confidence and 24,614 constitutive CTCF binding sites in human, and 297,825 high-confidence and 14,925 constitutive CTCF binding sites in mouse. With its systematic approach and user-friendly interface, CTCFexplorer provides an invaluable resource for advancing research in 3D genomics and gene regulation across both species.
+          CTCFexplorer is a curated data resource encompassing 2,097 high-quality human CTCF ChIP-seq datasets from NCBI GEO across 359 human biosamples, and 1,345 high-quality mouse CTCF ChIP-seq datasets across 285 mouse biosamples. We identified 531,851 high-confidence and 24,614 constitutive CTCF binding sites in human, and 297,825 high-confidence and 14,925 constitutive CTCF binding sites in mouse. With its systematic approach and user-friendly interface, CTCFexplorer provides an invaluable resource for advancing research in 3D genomics and gene regulation across both species.
         </p>
         <p>
           CTCFexplorer is implemented in Python and SQL and developed by the <a href="https://zanglab.github.io/index.html" target="_blank">Chongzhi Zang Lab</a> at the University of Virginia.
@@ -96,9 +96,9 @@
         </section>
         <div class="separator-line"></div>
 
-        <!-- Search by Cell Type Section -->
+        <!-- Search by Biosample Section -->
         <section>
-          <h4>Search by Cell Type</h4>
+          <h4>Search by Biosample</h4>
           <form action="/search_celltype" method="POST" onsubmit="handleEmptyInput(event, 'search-celltype', 'HeLa')">
             <input type="text" id="search-celltype" name="celltype" class="search-input" placeholder="e.g., HeLa">
             <button type="submit" class="btn btn-primary">Search</button>
