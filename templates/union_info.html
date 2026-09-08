@@ -65,7 +65,7 @@
                         <a class="nav-link" href="#celltype-info">Biosample Info</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#sample-info">Sample Info</a>
+                        <a class="nav-link" href="#sample-info">Dataset Info</a>
                     </li>
                 </ul>
             </nav>
@@ -167,10 +167,10 @@
                     </tbody>
                 </table>
 
-                <!-- Sample Info Section -->
+                <!-- Dataset Info Section -->
                 <div class="separator-line"></div>
-                <h4 class="section-header" id="sample-info">Sample Info</h4>
-                <a href="{{ url_for('download_table', species=species, table_name='sample_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Sample Info</a>
+                <h4 class="section-header" id="sample-info">Dataset Info</h4>
+                <a href="{{ url_for('download_table', species=species, table_name='sample_info', identifier=union_id) }}" class="btn btn-primary btn-sm mb-2">Download Dataset Info</a>
                 <table id="sample-table" class="table table-striped table-bordered mt-3">
                     <thead>
                         <tr>
